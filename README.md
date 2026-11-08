@@ -1,5 +1,5 @@
 <div align="center">
-<img width="800px" src="screenshoots/pull-it-together.png">
+<img width="720px" src="screenshoots/pull-it-together.png">
 
 # Pull It Together
 
