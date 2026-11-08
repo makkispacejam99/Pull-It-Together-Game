@@ -1,7 +1,7 @@
 <div align="center">
-<img width="720px" src="screenshoots/pull-it-together.png">
-
 # Pull It Together
+
+<img width="720px" src="screenshoots/pull-it-together.png">
 
 **Pon a prueba tu conocimiento, trabaja en equipo y gana.**  
 Un juego de trivia multijugador en tiempo real donde dos equipos tiran de una cuerda digital basados en sus aciertos, velocidad y trabajo en equipo.
