@@ -1,7 +1,6 @@
 <div align="center">
-# Pull It Together
 
-<img width="720px" src="screenshoots/pull-it-together.png">
+   # Pull It Together
 
 **Pon a prueba tu conocimiento, trabaja en equipo y gana.**  
 Un juego de trivia multijugador en tiempo real donde dos equipos tiran de una cuerda digital basados en sus aciertos, velocidad y trabajo en equipo.
@@ -10,6 +9,8 @@ Un juego de trivia multijugador en tiempo real donde dos equipos tiran de una cu
 [![License: MIT / CC0](https://img.shields.io/badge/License-CC0%20%2F%20MIT-blue.svg)](LICENSE)
 [![Built with Vanilla JS](https://img.shields.io/badge/Stack-Vanilla%20JS%20%2F%20Supabase-orange.svg)](https://supabase.com)
 
+
+<img width="720px" src="screenshoots/pull-it-together.png">
 </div>
 
 ## ¿De qué trata?
