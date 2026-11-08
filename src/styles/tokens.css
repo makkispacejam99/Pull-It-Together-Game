@@ -1,0 +1,83 @@
+/* Pull It Together diseño de Tokens */
+
+@font-face {
+  font-family: 'Press Start 2P';
+  src: url('../../assets/fonts/press-start-2p.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Jersey 15';
+  src: url('../../assets/fonts/jersey15-400.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  size-adjust: 108%;
+}
+
+:root {
+  --bg-0: #07080f;
+  --bg-1: #0b0d1a;
+  --bg-2: #121527;
+  --bg-3: #1a1d33;
+  --bg-4: #242741;
+
+  --line: #353541;
+  --line-soft: #23243a;
+  --line-bright: #5d5d67;
+
+  --text: #f2e8da;
+  --text-dim: #bab5cf;
+  --text-mute: #8b87a4;
+
+  /* Equipo A: astronauta verde */
+  --team-a: #5dd4aa;
+  --team-a-soft: #a9f5d6;
+  --team-a-deep: #0d5c42;
+  --team-a-ink: #04251b;
+
+  /* Equipo B: astronauta rosa */
+  --team-b: #ff8aae;
+  --team-b-soft: #ffc2d4;
+  --team-b-deep: #7a1839;
+  --team-b-ink: #2b0512;
+
+  /* Acentos de otros trajes */
+  --gold: #faba2d;
+  --gold-deep: #7a5a0d;
+  --violet: #c7b6ff;
+  --beige: #e2c3ab;
+  --suit: #353541;
+  --danger: #ff6b6b;
+  --sky: #c7b6ff;
+
+  --ok: var(--team-a);
+  --bad: var(--team-b);
+
+  /* Tipografía */
+  --font-display: 'Press Start 2P', 'Courier New', monospace;
+  --font-ui: 'Jersey 15', 'Courier New', monospace;
+  --font-body: 'Jersey 15', 'Trebuchet MS', sans-serif;
+
+  /* Escala 8px */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 24px;
+  --s-6: 32px;
+  --s-7: 48px;
+  --s-8: 64px;
+
+  --radius: 4px;
+  --radius-lg: 8px;
+
+  --shadow-hard: 0 4px 0 rgba(0, 0, 0, 0.55);
+  --shadow-soft: 0 18px 50px rgba(0, 0, 0, 0.45);
+  --ring: 0 0 0 3px var(--bg-0), 0 0 0 5px var(--line-bright);
+
+  --ease: cubic-bezier(0.2, 0.7, 0.25, 1);
+  --fast: 140ms;
+  --normal: 240ms;
+}
