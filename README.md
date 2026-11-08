@@ -1,4 +1,5 @@
 <div align="center">
+<img width="500px" src="screenshoots/pull-it-together.png">
 
 # Pull It Together
 
