@@ -17,8 +17,8 @@ Un juego de trivia multijugador en tiempo real donde dos equipos tiran de una cu
 
 Dos equipos, una cuerda y una pregunta. Cada equipo decide por mayoría la respuesta correcta, la respuesta más rápida desempata y cada acierto tira de la cuerda.
 
-* **Sin instalaciones complejas:** Funciona directamente desde el navegador.
-* **Multijugador local / bots:** Prueba con bots en el lobby o abre múltiples vistas de jugador.
+* **Sin Instalaciones:** Funciona directamente desde el navegador.
+* **Multijugador local:** Prueba con bots en el lobby o abre múltiples vistas de jugador.
 * **Dinámica de Cuerda:** La diferencia de puntos marca la tensión en la arena virtual (límite de -100 a +100 para victoria por knockout).
 
 ## Cómo ejecutar localmente el proyecto
