@@ -495,10 +495,15 @@ export class HostRoom {
     this.publish();
   }
 
-  movePlayer(id, team) {
+    movePlayer(id, team) {
     if (this.state.status !== 'lobby') return;
     const player = this.player(id);
-    if (!player) return;
+    if (!player || player.team === team) return;
+    const count = this.state.players.filter((p) => p.team === team).length;
+    if (count >= MAX_PER_TEAM) {
+      this.emitLocal('Ese equipo ya está lleno.');
+      return;
+    }
     player.team = team;
     this.publish();
   }
