@@ -15,11 +15,11 @@ Un juego de trivia multijugador en tiempo real donde dos equipos tiran de una cu
 
 ## ¿De qué trata?
 
-Dos equipos, una cuerda y una pregunta. Cada equipo decide por mayoría la respuesta correcta, la respuesta más rápida desempata y cada acierto tira de la cuerda.
+Pull It Together es un juego inspirado en el tira y afloja (Tug of War) donde 2 equipos se enfrentan en una frenetica batalla para probar su conocimiento. Gana el equipo que mas puntos de jalon acumule.
 
-* **Sin Instalaciones:** Funciona directamente desde el navegador.
-* **Multijugador local:** Prueba con bots en el lobby o abre múltiples vistas de jugador.
-* **Dinámica de Cuerda:** La diferencia de puntos marca la tensión en la arena virtual (límite de -100 a +100 para victoria por knockout).
+* **Sin Instalaciones:** Funciona directamente desde el navegador, en cualquier sistema operativo (Android, iOS, Linux, MacOS o Windows.
+* **Multijugador local y Online:** Juega con amigos o con Bots.
+* **Dinámica de Cuerda:** La diferencia de puntos se marca por medio de la cuerda (límite de -100 a +100 para victoria por knockout).
 
 ## Cómo ejecutar localmente el proyecto
 
@@ -33,10 +33,18 @@ Dos equipos, una cuerda y una pregunta. Cada equipo decide por mayoría la respu
 Abre tu navegador en http://localhost:5173/.
 
 ## ¿Cómo probarlo?
-Abre la aplicación en tu navegador y pulsa "Crear sala". En el lobby, pulsa "Añadir más bots" (reparte los bots entre los equipos Marcianos y Saturninos).Pulsa "Empezar partida" y observa la pantalla del anfitrión.Para probar la experiencia de un jugador real, pulsa "Abrir vista de jugador" y únete desde una pestaña nueva.Vuelve a la pestaña del anfitrión para ver en tiempo real cómo tu personaje aparece y reacciona en la arena.¿Cómo se puntúa?Cada ronda, los equipos deciden por mayoría simple. Si hay empate interno, el voto más rápido define el desempate.
+* Abre la aplicación en tu navegador y pulsa "Crear sala". 
+* En el lobby, pulsa "Añadir más bots" (reparte los bots entre los equipos Marcianos y Saturninos).
+* Pulsa "Empezar partida" y observa la pantalla del anfitrión.
+* Para probar la experiencia de un jugador real, pulsa "Abrir vista de jugador" y únete desde una pestaña nueva.
+* Vuelve a la pestaña del anfitrión para ver en tiempo real cómo tu personaje aparece y reacciona en la arena.
+
+## ¿Cómo se puntúa?
+* Cada ronda, los equipos deciden por mayoría simple. 
+* Si hay empate interno, el voto más rápido define el desempate.
 
 ## Motor de base de datos y API utilizado
-Supabase
+Supabase y SQL
 
 ## Créditos 
  * **Arte y Sonido:** Kenney New Platformer Pack (CC0), 50 Menu Interface SFX por ColorAlpha (CC0), Poopie Pack por Chajamakesmusic (CC0)
