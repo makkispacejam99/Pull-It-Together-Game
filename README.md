@@ -36,7 +36,7 @@ Abre tu navegador en http://localhost:5173/.
 * Abre la aplicación en tu navegador y pulsa "Crear sala". 
 * En el lobby, pulsa "Añadir más bots" (reparte los bots entre los equipos Marcianos y Saturninos).
 * Pulsa "Empezar partida" y observa la pantalla del anfitrión.
-* Para probar la experiencia de un jugador real, pulsa "Abrir vista de jugador" y únete desde una pestaña nueva.
+* Para probar la experiencia de un jugador real, pulsa "Unirse como jugador" y únete desde una pestaña nueva.
 * Vuelve a la pestaña del anfitrión para ver en tiempo real cómo tu personaje aparece y reacciona en la arena.
 
 ## ¿Cómo se puntúa?
