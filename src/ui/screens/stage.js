@@ -127,11 +127,10 @@ export function renderStage(root, params = {}) {
               <span>${esc(inviteUrl)}</span>
               <button type="button" class="lobby__link-copy" data-copy-link>Copiar</button>
             </div>
-            <button class="btn btn--ghost btn--sm" data-open-player>Abrir vista de jugador</button>
             <hr class="rule">
+            <button class="btn btn--ghost btn--sm" data-open-player>Unirse como jugador</button>
             <p class="tiny muted">
-              Comparte el código: cada jugador entra desde otra pestaña de este navegador.
-              En la versión online cada uno podrá usar su propio móvil.
+              Comparte el enlace o código de la sala e ingresa en tu movil o navegador.
             </p>
           </section>
 
@@ -367,7 +366,7 @@ export function renderStage(root, params = {}) {
     if (hint) {
       hint.textContent =
         total === 0
-          ? 'Comparte el código o añade bots si quieres probar sin gente.'
+          ? 'Juega con amigos o añade bots si quieres jugar solo.'
           : `${a} contra ${b} · ${total} de ${MAX_PLAYERS} jugadores dentro`;
     }
     if (startBtn) startBtn.disabled = !(a > 0 && b > 0);

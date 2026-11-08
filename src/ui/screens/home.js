@@ -9,7 +9,7 @@ const FEATURES = [
   {
     n: '01',
     title: 'Entra a la sala',
-    text: 'Comparte el código de 5 letras y listo. Hasta 30 jugadores, sin cuentas ni descargas.',
+    text: 'Comparte el código y compite. Hasta 30 jugadores, sin cuentas, ni descargas.',
   },
   {
     n: '02',
@@ -18,8 +18,8 @@ const FEATURES = [
   },
   {
     n: '03',
-    title: 'Tiren de la cuerda',
-    text: 'Cada acierto tira para su lado. Encadenen aciertos y arrastren al otro equipo hasta el KO.',
+    title: 'Acierta y Gana',
+    text: 'Cada acierto jala la cuerda. Encadena aciertos y arrastra al equipo rival hasta el KO.',
   },
 ];
 
@@ -52,7 +52,7 @@ export function renderHome(root) {
           <p class="home__note">
             <span>Hasta 30 jugadores</span>
             <span>Sin registro</span>
-            <span>Desde el móvil</span>
+            <span>Desde tu móvil u ordenador</span>
           </p>
         </main>
 

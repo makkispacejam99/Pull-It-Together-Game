@@ -203,7 +203,7 @@ export function renderPlay(root, params = {}) {
       <div class="play-wait">
         <p class="eyebrow">Prepárense</p>
         <h2 class="display" data-count style="font-size:4rem;color:var(--gold)">3</h2>
-        <p class="muted">Agárrense, ya viene la primera pregunta</p>
+        <p class="muted">Arrancamos en...</p>
       </div>`;
     const num = main.querySelector('[data-count]');
     startTimer(state, (remaining) => {
@@ -322,18 +322,12 @@ export function renderPlay(root, params = {}) {
           <p class="muted" style="font-size:0.92rem">
             ${
               myTeam.correct
-                ? `Su respuesta fue la ${LETTERS[myTeam.choice]} — <b style="color:var(--team-a)">acertaron</b> y jalaron <b>+${myTeam.pull}</b>.`
-                : `Su respuesta fue ${
-                    myTeam.choice >= 0 ? `la ${LETTERS[myTeam.choice]}` : '—'
-                  } — no acertaron esta vez.`
+                ? `El equipo eligió la opcion: <b style="color:var(--team-a)"> ${LETTERS[myTeam.choice]}</b>, Enhorabuena <b style="color:var(--team-a)">Acertaron</b>.`
+                : `El equipo eligió ${
+                    myTeam.choice >= 0 ? `la opción: <b style="color:var(--team-b)"> ${LETTERS[myTeam.choice]}</b>. ` : '—'
+                  }  Ups, <b style="color:var(--team-b)">no acertaron esta vez.</b>`
             }
             ${otherTeam.correct ? ' El rival también acertó.' : ''}
-          </p>
-          <p class="muted" style="font-size:0.92rem;margin-top:6px">
-            Cuerda: <b style="color:var(--gold)">${result.ropeAfter > 0 ? '+' : ''}${result.ropeAfter}</b>
-            ${result.delta !== 0 ? ` (${result.delta > 0 ? '+' : ''}${result.delta} para ${
-              result.delta > 0 ? state.teams.A.name : state.teams.B.name
-            })` : ' · sin movimiento'}
           </p>
         </div>
 
