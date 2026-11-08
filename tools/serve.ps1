@@ -1,11 +1,11 @@
 <#
-  Servidor estático mínimo para desarrollo local en Windows.
+  Servidor estático para desarrollo local en Windows.
 
-  Uso:
+  Ejecuta:
     pwsh -File tools/serve.ps1
     pwsh -File tools/serve.ps1 -Port 8080
 
-  No requiere Node, Python ni dependencias.
+  No se requiere ninguna instalación adicional.
 #>
 
 param(
