@@ -287,7 +287,13 @@ export function renderStage(root, params = {}) {
 
     root.querySelectorAll('[data-team-name]').forEach((input) => {
       input.addEventListener('change', () => {
-        host.setTeamName(input.dataset.teamName, input.value);
+        const team = input.dataset.teamName;
+        if (!input.value.trim()) {
+          input.value = host.state.teams[team].name;
+          toast('El equipo necesita un nombre', 'bad');
+          return;
+        }
+        host.setTeamName(team, input.value);
       });
       input.addEventListener('keydown', (event) => {
         if (event.key === 'Enter') input.blur();
@@ -296,6 +302,11 @@ export function renderStage(root, params = {}) {
 
     root.querySelectorAll('[data-list]').forEach((list) => {
       list.addEventListener('click', (event) => {
+        const move = event.target.closest('[data-move]');
+        if (move) {
+          host.movePlayer(move.dataset.move, move.dataset.to);
+          return;
+        }
         const remove = event.target.closest('[data-remove]');
         if (!remove) return;
         host.removePlayer(remove.dataset.remove);
@@ -320,9 +331,15 @@ export function renderStage(root, params = {}) {
                   <img src="${avatarSrc(p.avatar, 'idle')}" alt="">
                   <span>${esc(p.nickname)}</span>
                   ${p.isBot ? '<em style="font-style:normal;color:var(--text-mute);font-size:0.5rem">BOT</em>' : ''}
-                  <button class="player-chip__x" data-remove="${esc(p.id)}" aria-label="Quitar ${esc(
+                  
+                  <button class="player-chip__move player-chip__move--to-${p.team === 'A' ? 'b' : 'a'}" data-move="${esc(p.id)}" data-to="${p.team === 'A' ? 'B' : 'A'}" title="Mover al otro equipo" aria-label="Mover ${esc(
+                    p.nickname
+                  )} al otro equipo">${p.team === 'A' ? '→' : '←'}</button>
+
+                  <button class="player-chip__x" data-remove="${esc(p.id)}" title="Quitar jugador" aria-label="Quitar ${esc(
                     p.nickname
                   )}">✕</button>
+                  
                 </span>`
               )
               .join('')

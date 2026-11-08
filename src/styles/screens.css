@@ -1876,19 +1876,43 @@ en el team con la ventaja */
   opacity: 0.45;
 }
 
+.player-chip__move,
 .player-chip__x {
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 24px;
+  height: 24px;
   margin-left: 2px;
-  color: var(--text-mute);
-  font-size: 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--bg-1);
+  font-size: 0.72rem;
   line-height: 1;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 
-.player-chip__x:hover { color: var(--danger); }
+.player-chip__move--to-a { color: var(--team-a); }
+.player-chip__move--to-b { color: var(--team-b); }
 
-.team-col__empty {
-  padding: 12px 4px;
-  color: var(--text-mute);
-  font-size: 0.82rem;
+.player-chip__move:hover {
+  background: var(--bg-3);
+  border-color: currentColor;
+}
+
+.player-chip__x { color: var(--text-mute); }
+
+.player-chip__x:hover {
+  color: var(--danger);
+  border-color: var(--danger);
+}
+
+@media (pointer: coarse) {
+  .player-chip__move,
+  .player-chip__x {
+    width: 32px;
+    height: 32px;
+  }
 }
 
 .lobby__config {
@@ -3127,6 +3151,32 @@ en el team con la ventaja */
   .topbar__nav .btn--sm { padding-inline: 8px; }
 }
 
+/* Moviles */
+
+@media (max-width: 760px) {
+  html { font-size: 17px; }
+
+  .play__nick { font-size: 0.95rem; }
+  .q-mobile__meta { font-size: 0.78rem; }
+  .q-mobile__text { font-size: clamp(1.25rem, 5.4vw, 1.6rem); }
+  .answer {
+    min-height: 68px;
+    font-size: 1.12rem;
+  }
+  .answer__key {
+    width: 36px;
+    height: 36px;
+    font-size: 0.8rem;
+  }
+  .vote-note { font-size: 0.78rem; }
+  .roster .player-chip { font-size: 0.78rem; }
+  .mini-board__row { font-size: 1rem; }
+  .mini-board__pos { font-size: 0.75rem; }
+  .mini-board__pts { font-size: 0.8rem; }
+  .stat b { font-size: 1.15rem; }
+  .stat span { font-size: 0.66rem; }
+}
+
 /*  Pantallas muy anchas (proyector) */
 
 @media (min-width: 1600px) {
@@ -3135,4 +3185,24 @@ en el team con la ventaja */
 
 @media (min-height: 1000px) and (min-width: 1200px) {
   .arena { --char-size: 128px; }
+}
+
+@media (min-width: 1100px) {
+  html { font-size: 18px; }
+  .player-chip {
+    padding: 4px 8px 4px 4px;
+    font-size: 0.7rem;
+  }
+  .player-chip img {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+@media (min-width: 1500px) {
+  html { font-size: 20px; }
+}
+
+@media (min-width: 1900px) {
+  html { font-size: 22px; }
 }
