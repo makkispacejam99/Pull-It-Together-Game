@@ -1,0 +1,17 @@
+name: Mantener Supabase Activo
+
+on:
+  schedule:
+    # Ejecutar todos los lunes y jueves a las 00:00 UTC (Cada 3 o 4 días)
+    - cron: '0 0 * * 1,4'
+  workflow_dispatch: # "Run workflow" para probarlo manualmente
+
+jobs:
+  ping-supabase:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Hacer una consulta REST a Supabase
+        run: |
+          curl -X GET "${{ secrets.SUPABASE_URL }}" \
+            -H "apikey: ${{ secrets.SUPABASE_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_KEY }}"
