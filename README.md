@@ -37,7 +37,7 @@ Abre la aplicación en tu navegador y pulsa "Crear sala".En el lobby, pulsa "Añ
 Supabase
 
 ## Créditos 
-Arte y Sonido:Kenney New Platformer Pack (CC0), 50 Menu Interface SFX por ColorAlpha (CC0), Poopie Pack por Chajamakesmusic (CC0),
-Tipografías:Press Start 2P y Jersey 15 bajo licencia SIL Open Font License.
+ **Arte y Sonido:** Kenney New Platformer Pack (CC0), 50 Menu Interface SFX por ColorAlpha (CC0), Poopie Pack por Chajamakesmusic (CC0),
+ **Tipografías:** Press Start 2P y Jersey 15 bajo licencia SIL Open Font License.
 
 Creado con ❤️ por MakkiDEV 
