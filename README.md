@@ -15,7 +15,7 @@ Un juego de trivia multijugador en tiempo real donde dos equipos tiran de una cu
 
 ## ¿De qué trata?
 
-Dos equipos, una cuerda y una pregunta. Cada equipo decide por mayoría la respuesta correcta; la respuesta más rápida desempata y cada acierto tira de la cuerda.
+Dos equipos, una cuerda y una pregunta. Cada equipo decide por mayoría la respuesta correcta, la respuesta más rápida desempata y cada acierto tira de la cuerda.
 
 * **Sin instalaciones complejas:** Funciona directamente desde el navegador.
 * **Multijugador local / bots:** Prueba con bots en el lobby o abre múltiples vistas de jugador.
@@ -33,7 +33,7 @@ Dos equipos, una cuerda y una pregunta. Cada equipo decide por mayoría la respu
 Abre tu navegador en http://localhost:5173/.
 
 ## ¿Cómo probarlo?
-Abre la aplicación en tu navegador y pulsa "Crear sala".En el lobby, pulsa "Añadir más bots" (reparte los bots entre los equipos Marcianos y Saturninos).Pulsa "Empezar partida" y observa la pantalla del anfitrión.Para probar la experiencia de un jugador real, pulsa "Abrir vista de jugador" y únete desde una pestaña nueva.Vuelve a la pestaña del anfitrión para ver en tiempo real cómo tu personaje aparece y reacciona en la arena.¿Cómo se puntúa?Cada ronda, los equipos deciden por mayoría simple. Si hay empate interno, el voto más rápido define el desempate.
+Abre la aplicación en tu navegador y pulsa "Crear sala". En el lobby, pulsa "Añadir más bots" (reparte los bots entre los equipos Marcianos y Saturninos).Pulsa "Empezar partida" y observa la pantalla del anfitrión.Para probar la experiencia de un jugador real, pulsa "Abrir vista de jugador" y únete desde una pestaña nueva.Vuelve a la pestaña del anfitrión para ver en tiempo real cómo tu personaje aparece y reacciona en la arena.¿Cómo se puntúa?Cada ronda, los equipos deciden por mayoría simple. Si hay empate interno, el voto más rápido define el desempate.
 
 ## Motor de base de datos y API utilizado
 Supabase
