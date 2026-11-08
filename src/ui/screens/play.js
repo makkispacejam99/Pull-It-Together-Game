@@ -403,6 +403,10 @@ export function renderPlay(root, params = {}) {
             .join('')}
         </div>
 
+        <p class="tiny muted" style="text-align:center">
+          Si el anfitrión da revancha, quédate aquí y espera a que la partida comience.
+        </p>
+
         <a class="btn btn--primary btn--block" href="#/">Volver al inicio</a>
       </div>`;
   }

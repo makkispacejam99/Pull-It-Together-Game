@@ -232,6 +232,9 @@ export class HostRoom {
       this.emitLocal('No hay preguntas para esos filtros. Revisa el banco.');
       return;
     }
+    if (queue.length < this.state.config.rounds) {
+      this.emitLocal(`Solo hay ${queue.length} preguntas con esos filtros: la partida tendrá ${queue.length} rondas.`);
+    }
 
     const hasA = this.state.players.some((p) => p.team === 'A');
     const hasB = this.state.players.some((p) => p.team === 'B');
@@ -427,6 +430,7 @@ export class HostRoom {
       p.voted = false;
     }
     this.clearBots();
+    this.stopBots();
     this.saveHostData();
     this.publish();
   }
@@ -466,9 +470,13 @@ export class HostRoom {
     }
   }
 
-  clearBots() {
+  stopBots() {
     for (const timer of this.botTimers) clearTimeout(timer);
     this.botTimers = [];
+  }
+
+  clearBots() {
+    this.stopBots();
     if (this.state.status === 'lobby') {
       const before = this.state.players.length;
       this.state.players = this.state.players.filter((p) => !p.isBot);
@@ -547,8 +555,11 @@ export class HostRoom {
     let player = this.player(id);
 
     if (player) {
-      player.connected = true;
+            player.connected = true;
       player.lastSeen = Date.now();
+      if (this.state.status === 'question' && !this.state.roundPlayers.includes(player.id)) {
+        this.state.roundPlayers.push(player.id);
+      }
       this.publish(true);
       return;
     }
