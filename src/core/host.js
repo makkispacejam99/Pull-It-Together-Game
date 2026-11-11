@@ -290,7 +290,7 @@ export class HostRoom {
 
     const now = Date.now();
     this.state.round = index + 1;
-    this.durationMs = (question.time || this.state.config.duration) * 1000;
+    this.durationMs = this.state.config.duration * 1000;
     this.state.question = toPublic(question);
     this.correctIndex = question.correct;
     this.votes = {};

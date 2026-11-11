@@ -4,14 +4,16 @@ import {
   DIFFICULTIES,
   DIFFICULTY_LABEL,
   bankStats,
+  buildTemplate,
   categoriesOf,
   loadBank,
+  parseImport,
   resetBank,
   saveBank,
   searchBank,
   validateQuestion,
 } from '../../core/questions.js';
-import { esc, truncate, uid } from '../../core/utils.js';
+import { downloadFile, esc, normalizeText, truncate, uid } from '../../core/utils.js';
 import { toast } from '../toast.js';
 
 export function renderAdmin(root) {
@@ -40,6 +42,7 @@ function renderPanel(root) {
         <div class="admin__actions">
           <button class="btn btn--ghost btn--sm btn--danger" data-delete-all>Borrar todas</button>
           <button class="btn btn--ghost btn--sm" data-reset>Restaurar</button>
+          <button class="btn btn--primary btn--sm" data-help>Ayuda</button>
           <a class="btn btn--team-a btn--sm" href="#/">Volver</a>
         </div>
       </header>
@@ -57,6 +60,14 @@ function renderPanel(root) {
           <button class="btn btn--ghost" data-delete-many>Borrar varias</button>
           <button class="btn btn--primary" data-new>Nueva pregunta</button>
         </div>
+
+        <div class="admin__toolbar admin__toolbar--data">
+          <span class="admin__data-label">Datos</span>
+          <button class="btn btn--ghost btn--sm" data-import>Importar</button>
+          <button class="btn btn--ghost btn--sm" data-export>Exportar</button>
+          <button class="btn btn--ghost btn--sm" data-template>Descargar plantilla</button>
+        </div>
+        <input type="file" accept=".md,text/markdown" data-import-file hidden>
 
         <div class="admin__list" data-list></div>
       </main>
@@ -130,6 +141,51 @@ function renderPanel(root) {
   });
 
   root.querySelector('[data-delete-many]').addEventListener('click', openDeleteMany);
+
+  const importFile = root.querySelector('[data-import-file]');
+
+  root.querySelector('[data-import]').addEventListener('click', () => {
+    importFile.value = '';
+    importFile.click();
+  });
+
+  importFile.addEventListener('change', async () => {
+    const file = importFile.files?.[0];
+    if (!file) return;
+    try {
+      const result = parseImport(await file.text());
+      if (!result.ok) {
+        toast(result.error, 'bad');
+        return;
+      }
+      if (!result.questions.length) {
+        toast('No se encontraron preguntas válidas en el archivo', 'bad');
+        return;
+      }
+      openImport(result.questions, result.skipped, file.name);
+    } catch {
+      toast('No se pudo leer el archivo', 'bad');
+    } finally {
+      importFile.value = '';
+    }
+  });
+
+  root.querySelector('[data-export]').addEventListener('click', () => {
+    if (!bank.length) {
+      toast('No hay preguntas para exportar', 'bad');
+      return;
+    }
+    const date = new Date().toISOString().slice(0, 10);
+    downloadFile(`pull-it-together-preguntas-${date}.md`, buildTemplate(bank), 'text/markdown');
+    toast('Banco exportado', 'ok');
+  });
+
+  root.querySelector('[data-template]').addEventListener('click', () => {
+    downloadFile('pull-it-together-plantilla.md', buildTemplate(), 'text/markdown');
+    toast('Plantilla descargada', 'ok');
+  });
+
+  root.querySelector('[data-help]').addEventListener('click', openHelp);
 
   root.querySelector('[data-reset]').addEventListener('click', () => {
     if (!confirm('¿Restaurar el banco de ejemplo? Se perderán tus preguntas actuales.')) return;
@@ -291,6 +347,202 @@ function renderPanel(root) {
     });
   }
 
+  function openImport(imported, skipped, fileName) {
+    const backdrop = document.createElement('div');
+    backdrop.className = 'modal-backdrop';
+    backdrop.innerHTML = `
+      <form class="modal panel" data-import-modal>
+        <div class="modal__head">
+          <h2 class="modal__title">Importar preguntas</h2>
+          <button type="button" class="icon-btn" data-close aria-label="Cerrar">✕</button>
+        </div>
+
+        <div class="modal__body">
+          <p class="muted tiny">${esc(fileName)}</p>
+          <div class="import-summary">
+            <span class="chip chip--a">${imported.length} listas</span>
+            <span class="chip chip--ghost">${skipped} omitidas</span>
+            <span class="chip chip--ghost">${bank.length} en el banco</span>
+          </div>
+
+          <div class="field">
+            <span class="field-label">Cómo importar</span>
+            <label class="editor-opt is-on" data-mode>
+              <input type="radio" name="mode" value="append" checked>
+              <span class="import-mode__text">Añadir al banco actual</span>
+            </label>
+            <label class="editor-opt" data-mode>
+              <input type="radio" name="mode" value="replace">
+              <span class="import-mode__text">Reemplazar todo el banco</span>
+            </label>
+          </div>
+
+          <p class="field-error" data-warning hidden>Se borrarán las preguntas actuales del banco.</p>
+        </div>
+
+        <div class="modal__foot">
+          <button type="button" class="btn btn--ghost" data-cancel>Cancelar</button>
+          <button type="submit" class="btn btn--primary">Importar</button>
+        </div>
+      </form>`;
+
+    document.body.appendChild(backdrop);
+    document.body.classList.add('is-locked');
+
+    const form = backdrop.querySelector('[data-import-modal]');
+    const modeNodes = Array.from(backdrop.querySelectorAll('[data-mode]'));
+    const warning = backdrop.querySelector('[data-warning]');
+
+    const close = () => {
+      backdrop.remove();
+      document.body.classList.remove('is-locked');
+      document.removeEventListener('keydown', onKey);
+    };
+
+    const onKey = (event) => {
+      if (event.key === 'Escape') close();
+    };
+    document.addEventListener('keydown', onKey);
+
+    backdrop.addEventListener('click', (event) => {
+      if (event.target === backdrop) close();
+    });
+    backdrop.querySelector('[data-close]').addEventListener('click', close);
+    backdrop.querySelector('[data-cancel]').addEventListener('click', close);
+
+    form.addEventListener('change', () => {
+      const mode = form.querySelector('input[name="mode"]:checked')?.value || 'append';
+      modeNodes.forEach((node) => node.classList.toggle('is-on', node.querySelector('input').checked));
+      warning.hidden = mode !== 'replace';
+    });
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const mode = form.querySelector('input[name="mode"]:checked')?.value || 'append';
+
+      if (
+        mode === 'replace' &&
+        bank.length &&
+        !confirm(`¿Reemplazar las ${bank.length} preguntas actuales por las ${imported.length} del archivo?`)
+      ) {
+        return;
+      }
+
+      let next;
+      let message;
+
+      if (mode === 'replace') {
+        const used = new Set();
+        next = imported.map((question) => {
+          let id = question.id && !used.has(question.id) ? question.id : uid('q_');
+          while (used.has(id)) id = uid('q_');
+          used.add(id);
+          return { ...question, id };
+        });
+        message = `${next.length} preguntas importadas`;
+      } else {
+        const texts = new Set(bank.map((question) => normalizeText(question.text)));
+        const used = new Set(bank.map((question) => question.id));
+        const fresh = imported
+          .filter((question) => !texts.has(normalizeText(question.text)))
+          .map((question) => {
+            let id = question.id && !used.has(question.id) ? question.id : uid('q_');
+            while (used.has(id)) id = uid('q_');
+            used.add(id);
+            texts.add(normalizeText(question.text));
+            return { ...question, id };
+          });
+        next = [...fresh, ...bank];
+        const repeated = imported.length - fresh.length;
+        message = `${fresh.length} preguntas añadidas${repeated ? ` · ${repeated} ya existían` : ''}`;
+      }
+
+      persist(next);
+      close();
+      toast(message, 'ok');
+    });
+  }
+
+  function openHelp() {
+    const backdrop = document.createElement('div');
+    backdrop.className = 'modal-backdrop';
+    backdrop.innerHTML = `
+      <div class="modal panel" data-help-modal>
+        <div class="modal__head">
+          <h2 class="modal__title">Ayuda · Banco de preguntas</h2>
+          <button type="button" class="icon-btn" data-close aria-label="Cerrar">✕</button>
+        </div>
+
+        <div class="modal__body help-sheet">
+          <p>Crea preguntas a mano o prepara un archivo completo y súbelo desde el botón Importar.</p>
+
+          <h3>Importar</h3>
+          <p>Acepta archivos <strong>.md</strong> creados con la plantilla. Puedes añadir las preguntas al banco actual o reemplazarlo por completo. Al añadir, las preguntas repetidas se omiten.</p>
+
+          <h3>Exportar</h3>
+          <p>Descarga el banco actual en un archivo <strong>.md</strong>. Sirve como copia de seguridad y puede volver a importarse cuando quieras.</p>
+
+          <h3>Descargar plantilla</h3>
+          <p>Descarga 100 preguntas generales listas para editar. Ábrela con cualquier editor de texto, cambia o añade bloques y guárdala como <strong>.md</strong>.</p>
+
+          <h3>Formato de cada pregunta</h3>
+          <pre class="help-code">## Pregunta
+Texto: ¿Cuál es el planeta más grande del sistema solar?
+Opción A: Saturno
+Opción B: Júpiter
+Opción C: Marte
+Opción D: Neptuno
+Correcta: B
+Categoría: Ciencia
+Dificultad: Fácil</pre>
+
+          <h3>Reglas</h3>
+          <ul>
+            <li>La pregunta necesita al menos 5 caracteres y las opciones no pueden estar vacías.</li>
+            <li>Se admiten entre 2 y 4 opciones por pregunta.</li>
+            <li>La respuesta correcta se indica con la letra A, B, C o D.</li>
+            <li>La dificultad puede ser Fácil, Media o Difícil.</li>
+            <li>La duración de cada ronda se configura en el lobby.</li>
+          </ul>
+
+          <h3>Consejos</h3>
+          <ul>
+            <li>Escribe preguntas cortas para que se lean bien en pantallas grandes y móviles.</li>
+            <li>Evita preguntas que dependan de un país o región concreta si juegas con gente de varios lugares.</li>
+            <li>Usa categorías claras y mantén un banco variado de temas y dificultades.</li>
+            <li>Antes de reemplazar el banco, exporta una copia de seguridad.</li>
+          </ul>
+
+          <p class="muted tiny">Si una pregunta se omite al importar, revisa la letra correcta, las opciones vacías o si ya existe otra pregunta con el mismo texto.</p>
+        </div>
+
+        <div class="modal__foot">
+          <button type="button" class="btn btn--primary" data-close>Cerrar</button>
+        </div>
+      </div>`;
+
+    document.body.appendChild(backdrop);
+    document.body.classList.add('is-locked');
+
+    const close = () => {
+      backdrop.remove();
+      document.body.classList.remove('is-locked');
+      document.removeEventListener('keydown', onKey);
+    };
+
+    const onKey = (event) => {
+      if (event.key === 'Escape') close();
+    };
+    document.addEventListener('keydown', onKey);
+
+    backdrop.addEventListener('click', (event) => {
+      if (event.target === backdrop) close();
+    });
+    backdrop.querySelectorAll('[data-close]').forEach((button) => {
+      button.addEventListener('click', close);
+    });
+  }
+
   /* Editor de preguntas */
 
   function openEditor(question) {
@@ -356,18 +608,6 @@ function renderPanel(root) {
             </div>
           </div>
 
-          <div class="field">
-            <label for="q-time">Tiempo especial (opcional)</label>
-            <select class="input" id="q-time" name="time">
-              <option value="">Usar el tiempo de la sala</option>
-              ${[20, 30, 45, 60, 90]
-                .map(
-                  (t) => `<option value="${t}" ${draft.time === t ? 'selected' : ''}>${t} segundos</option>`
-                )
-                .join('')}
-            </select>
-          </div>
-
           <p class="editor-hint">
             Consejo: preguntas de una sola línea se leen mejor en pantalla grande.
           </p>
@@ -417,7 +657,6 @@ function renderPanel(root) {
         correct: Number(form.correct.value),
         category: form.category.value,
         difficulty: form.difficulty.value,
-        time: form.time.value ? Number(form.time.value) : null,
       };
 
       const result = validateQuestion(data, bank, draft.id);

@@ -27,6 +27,7 @@ export function renderJoin(root, params = {}) {
   root.innerHTML = `
     <div class="join">
       <div class="join__card panel">
+        <a class="btn btn--ghost btn--sm join__back" href="#/">Volver</a>
         <div class="join__head">
           <p class="eyebrow">Entrar a la sala</p>
           ${
