@@ -90,8 +90,15 @@ export function createScene({ mini = false } = {}) {
     const width = root.clientWidth || 900;
     const perRow = Math.max(1, maxPerRow);
     const available = width * 0.5;
-    const size = clamp(available / (perRow * 0.86), mini ? 26 : 30, mini ? 72 : 126);
+    const maxSize = mini ? 72 : width < 760 ? 104 : width < 1200 ? 116 : 122;
+    const size = clamp(available / (perRow * 0.86), mini ? 26 : 30, maxSize);
+    const scale = clamp(1 + (900 - width) / 1500, 1, 1.22);
+    const gap = perRow > 1 ? (available - size * scale) / (perRow - 1) : size;
+    const overlap = perRow > 1 ? Math.min(-0.16, gap / size - 1) : 0;
     root.style.setProperty('--char-size', `${Math.round(size)}px`);
+    root.style.setProperty('--char-scale', scale.toFixed(3));
+    root.style.setProperty('--char-overlap', overlap.toFixed(3));
+    root.style.setProperty('--char-lift', `${Math.round((scale - 1) * size)}px`);
   }
 
   function build(state) {

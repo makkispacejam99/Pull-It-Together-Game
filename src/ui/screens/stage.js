@@ -115,6 +115,7 @@ export function renderStage(root, params = {}) {
             <span class="chip chip--gold">Sala ${esc(code)}</span>
             <button class="btn btn--ghost btn--sm" data-audio>${isMuted() ? '♪̸' : '♪'}</button>
             <button class="btn btn--ghost btn--sm" data-fullscreen>Pantalla completa</button>
+            <a class="btn btn--ghost btn--sm join__back" href="#/">Volver</a>
           </div>
         </header>
 
