@@ -1,0 +1,66 @@
+/* Resultado personal */
+
+.personal {
+  display: grid;
+  gap: 14px;
+  flex: 1;
+  align-content: center;
+  text-align: center;
+}
+
+.personal__hero {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+}
+
+.personal__avatar {
+  width: 96px;
+  height: 96px;
+  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.5));
+  animation: bob 2.4s ease-in-out infinite;
+}
+
+.personal__name {
+  font-family: var(--font-ui);
+  font-size: 1.1rem;
+  letter-spacing: 0.06em;
+}
+
+.personal__rank {
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 7vw, 2.2rem);
+  color: var(--gold);
+  text-transform: uppercase;
+}
+
+.personal__stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.stat {
+  padding: 10px 6px;
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg-1);
+}
+
+.stat b {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  color: var(--text);
+}
+
+.stat span {
+  display: block;
+  margin-top: 4px;
+  font-family: var(--font-ui);
+  font-size: 0.54rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-mute);
+}
+

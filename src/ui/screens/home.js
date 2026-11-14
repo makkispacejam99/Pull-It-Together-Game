@@ -64,7 +64,7 @@ export function renderHome(root) {
           (f) => `
           <article class="how-card panel">
             <span class="how-card__num">${f.n}</span>
-            <h3 class="how-card__title">${f.title}</h3>
+            <h2 class="how-card__title">${f.title}</h2>
             <p class="how-card__text">${f.text}</p>
           </article>`
         ).join('')}

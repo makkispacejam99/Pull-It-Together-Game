@@ -1,0 +1,134 @@
+/* Panel de pregunta */
+
+.qpanel {
+  position: relative;
+  z-index: 10;
+  display: grid;
+  gap: clamp(6px, 1.2vh, 14px);
+  padding: clamp(10px, 1.8vh, 20px) clamp(12px, 2.4vw, 36px) clamp(12px, 2vh, 24px);
+  background:
+    linear-gradient(180deg, rgba(12, 10, 22, 0.4), rgba(7, 8, 15, 0.98) 30%),
+    var(--bg-0);
+  border-top: 2px solid var(--line-soft);
+}
+
+.qpanel__meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.qpanel__votes {
+  margin-left: auto;
+  font-family: var(--font-ui);
+  font-size: clamp(0.56rem, 0.9vw, 0.72rem);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.qpanel__text {
+  font-size: clamp(1.05rem, 2.1vw, 1.85rem);
+  line-height: 1.22;
+  color: var(--text);
+  max-width: 92ch;
+  text-wrap: balance;
+}
+
+.qpanel__options {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: clamp(6px, 1vw, 12px);
+}
+
+.opt {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 8px 12px;
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg-2);
+  transition:
+    border-color var(--normal) var(--ease),
+    background-color var(--normal) var(--ease),
+    transform var(--normal) var(--ease);
+}
+
+.opt__key {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  border: 2px solid var(--line-bright);
+  border-radius: 2px;
+  background: var(--bg-3);
+  font-family: var(--font-display);
+  font-size: 0.62rem;
+  color: var(--text-dim);
+}
+
+.opt__txt {
+  flex: 1;
+  font-size: clamp(0.82rem, 1.25vw, 1.05rem);
+  line-height: 1.25;
+  color: var(--text-dim);
+}
+
+.opt__tags {
+  display: flex;
+  gap: 4px;
+  flex: 0 0 auto;
+}
+
+.opt__tag {
+  padding: 2px 6px;
+  border-radius: 2px;
+  font-family: var(--font-ui);
+  font-size: 0.52rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  animation: pop-in 260ms var(--ease) both;
+}
+
+.opt__tag--a {
+  background: var(--team-a);
+  color: var(--team-a-ink);
+}
+
+.opt__tag--b {
+  background: var(--team-b);
+  color: var(--team-b-ink);
+}
+
+.opt.is-correct {
+  border-color: var(--team-a);
+  background: rgba(93, 212, 170, 0.12);
+  box-shadow: 0 0 0 1px var(--team-a), 0 0 24px rgba(93, 212, 170, 0.18);
+}
+
+.opt.is-correct .opt__key {
+  border-color: var(--team-a);
+  background: var(--team-a);
+  color: var(--team-a-ink);
+}
+
+.opt.is-correct .opt__txt {
+  color: var(--text);
+}
+
+.opt.is-wrong {
+  border-color: var(--danger);
+  background: rgba(255, 107, 107, 0.08);
+  opacity: 0.7;
+}
+
+.opt.is-wrong .opt__key {
+  border-color: var(--danger);
+  background: rgba(255, 107, 107, 0.2);
+  color: var(--danger);
+}
+

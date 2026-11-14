@@ -1,0 +1,203 @@
+/* Barra de tracción */
+
+.tug {
+  position: relative;
+  z-index: 11;
+  padding: 38px 0 22px;
+}
+
+.tug__bar {
+  position: relative;
+  height: 14px;
+  background: #090b16;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.tug__half {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  opacity: 0.6;
+  transition: opacity 500ms var(--ease);
+}
+
+.tug__half--a {
+  left: 0;
+  background: linear-gradient(90deg, var(--team-a), rgba(93, 212, 170, 0.08));
+}
+
+.tug__half--b {
+  right: 0;
+  background: linear-gradient(270deg, var(--team-b), rgba(255, 138, 174, 0.08));
+}
+
+.tug.is-lead-a .tug__half--a,
+.tug.is-lead-b .tug__half--b {
+  opacity: 1;
+}
+
+.tug__mid {
+  position: absolute;
+  left: 50%;
+  top: -4px;
+  bottom: -4px;
+  width: 2px;
+  background: rgba(255, 255, 255, 0.5);
+  transform: translateX(-50%);
+}
+
+/* OVNI volador que flota sobre la barra y se proyecta 
+en el team con la ventaja */
+
+.tug__ship {
+  position: absolute;
+  top: 0;
+  left: clamp(26px, var(--ship-x, 50%), calc(100% - 26px));
+  width: 52px;
+  height: 0;
+  z-index: 2;
+  transform: translateX(-50%);
+  transition: left 800ms var(--ease);
+  pointer-events: none;
+}
+
+.tug__beam {
+  position: absolute;
+  left: 50%;
+  bottom: -2px;
+  width: 58px;
+  height: 22px;
+  transform: translateX(-50%);
+  background: linear-gradient(180deg, rgba(250, 186, 45, 0.75), rgba(250, 186, 45, 0));
+  clip-path: polygon(44% 0, 56% 0, 100% 100%, 0 100%);
+  transition: background 300ms var(--ease);
+  animation: beam-flicker 2.4s ease-in-out infinite;
+}
+
+.tug__beam::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(180deg, rgba(255, 255, 255, 0.6) 0 2px, transparent 2px 7px);
+  opacity: 0.28;
+  animation: beam-scan 1.2s linear infinite;
+}
+
+.tug.is-lead-a .tug__beam {
+  background: linear-gradient(180deg, rgba(93, 212, 170, 0.8), rgba(93, 212, 170, 0));
+}
+
+.tug.is-lead-b .tug__beam {
+  background: linear-gradient(180deg, rgba(255, 138, 174, 0.8), rgba(255, 138, 174, 0));
+}
+
+.tug__ship::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -10px;
+  width: 54px;
+  height: 10px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(250, 186, 45, 0.9), rgba(250, 186, 45, 0) 72%);
+  animation: beam-flicker 2.4s ease-in-out infinite;
+  transition: background 300ms var(--ease);
+  pointer-events: none;
+}
+
+.tug.is-lead-a .tug__ship::after {
+  background: radial-gradient(ellipse at center, rgba(93, 212, 170, 0.95), rgba(93, 212, 170, 0) 72%);
+}
+
+.tug.is-lead-b .tug__ship::after {
+  background: radial-gradient(ellipse at center, rgba(255, 138, 174, 0.95), rgba(255, 138, 174, 0) 72%);
+}
+
+.tug__ufo {
+  position: absolute;
+  left: 50%;
+  bottom: 12px;
+  width: 38px;
+  height: 26px;
+  transform: translateX(-50%);
+  filter: drop-shadow(0 0 8px rgba(250, 186, 45, 0.45));
+  transition: transform 300ms var(--ease), filter 300ms var(--ease);
+  animation: ufo-hover 2.8s ease-in-out infinite;
+}
+
+.tug.is-lead-a .tug__ufo {
+  transform: translateX(-50%) rotate(-9deg);
+  filter: drop-shadow(0 0 10px rgba(93, 212, 170, 0.8));
+}
+
+.tug.is-lead-b .tug__ufo {
+  transform: translateX(-50%) rotate(9deg);
+  filter: drop-shadow(0 0 10px rgba(255, 138, 174, 0.8));
+}
+
+.tug.is-close .tug__beam {
+  animation-duration: 1.1s;
+}
+
+@keyframes ufo-hover {
+  50% { translate: 0 -2px; }
+}
+
+@keyframes beam-flicker {
+  50% { opacity: 0.55; }
+}
+
+@keyframes beam-scan {
+  to { background-position-y: 7px; }
+}
+
+.tug__status {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 12px;
+  transform: translateX(-50%);
+  border: 2px solid currentColor;
+  background: rgba(7, 8, 15, 0.94);
+  color: var(--gold);
+  font-family: var(--font-display);
+  font-size: clamp(0.5rem, 0.95vw, 0.68rem);
+  letter-spacing: 0.06em;
+  line-height: 1.65;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.tug.is-lead-a .tug__status { color: var(--team-a); }
+.tug.is-lead-b .tug__status { color: var(--team-b); }
+
+.tug__dir {
+  width: 0;
+  height: 0;
+  border: 5px solid transparent;
+}
+
+.tug__dir--l { border-right-color: currentColor; }
+.tug__dir--r { border-left-color: currentColor; }
+
+.tug__ko {
+  color: var(--gold);
+  font-family: var(--font-ui);
+  font-size: 0.6rem;
+  letter-spacing: 0.04em;
+}
+
+.tug.is-close .tug__status {
+  animation: ko-pulse 900ms ease-in-out infinite;
+}
+
+@keyframes ko-pulse {
+  50% { transform: translateX(-50%) scale(1.07); }
+}
+

@@ -2,8 +2,8 @@
   Servidor estático para desarrollo local en Windows.
 
   Ejecuta:
-    pwsh -File tools/serve.ps1
-    pwsh -File tools/serve.ps1 -Port 8080
+    pwsh tools/serve.ps1
+    pwsh tools/serve.ps1 -Port 8080
 
   No se requiere ninguna instalación adicional.
 #>

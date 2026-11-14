@@ -1,0 +1,214 @@
+/* Cuerda */
+
+.rope {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: var(--char-bottom);
+  height: calc(var(--char-size) * 0.36);
+  z-index: 6;
+  pointer-events: none;
+  transition: transform 600ms var(--ease);
+}
+
+/* Cuerda de 2 colores */
+
+.rope__cord {
+  --cord-h: clamp(5px, calc(var(--char-size) * 0.08), 9px);
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: var(--cord-h);
+  transform: translateY(-50%);
+  border-radius: 999px;
+  box-shadow:
+    0 0 0 1px rgba(8, 6, 18, 0.75),
+    0 2px 5px rgba(0, 0, 0, 0.45);
+}
+
+.rope__half {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  transition:
+    width 700ms var(--ease),
+    left 700ms var(--ease);
+}
+
+
+/* Marcianos - verde */
+.rope__half--a {
+  left: var(--rope-split, 50%);
+  right: 0;
+  border-radius: 2px 999px 999px 2px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0) 45%, rgba(0, 0, 0, 0.4) 100%),
+    linear-gradient(90deg, #b6f7dc 0%, #8fe9c8 22%, #5dd4aa 55%, #2f9f7a 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(4, 37, 27, 0.55),
+    0 0 8px rgba(93, 212, 170, 0.3);
+}
+
+/* Saturninos - Rojo */
+.rope__half--b {
+  left: 0;
+  width: var(--rope-split, 50%);
+  border-radius: 999px 2px 2px 999px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0) 45%, rgba(0, 0, 0, 0.4) 100%),
+    linear-gradient(90deg, #c92a3d 0%, #ff4d5e 28%, #ff7a6b 62%, #ffb3a7 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(43, 5, 18, 0.55),
+    0 0 8px rgba(255, 77, 94, 0.3);
+}
+
+/* Divisor Central */
+.rope__cord::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: repeating-linear-gradient(
+    116deg,
+    rgba(255, 255, 255, 0.26) 0 2px,
+    rgba(255, 255, 255, 0) 2px 6px,
+    rgba(0, 0, 0, 0.16) 6px 8px,
+    rgba(255, 255, 255, 0.12) 8px 12px
+  );
+  mix-blend-mode: overlay;
+  opacity: 0.75;
+  pointer-events: none;
+}
+
+/* Pin divisor de la cuerda */
+.rope__pin {
+  position: absolute;
+  left: var(--rope-split, 50%);
+  top: 50%;
+  z-index: 2;
+  width: clamp(11px, calc(var(--char-size) * 0.13), 17px);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle at 34% 30%, #ffffff 0 45%, #f1f3f8 46% 75%, #cfd4e0 100%);
+  box-shadow:
+    0 0 0 2px rgba(7, 8, 15, 0.9),
+    0 0 10px rgba(255, 255, 255, 0.75);
+  transition: left 700ms var(--ease);
+  pointer-events: none;
+}
+
+.arena.is-pulling-a .rope {
+  animation: rope-jerk-a 560ms var(--ease);
+}
+
+.arena.is-pulling-b .rope {
+  animation: rope-jerk-b 560ms var(--ease);
+}
+
+@keyframes rope-jerk-a {
+  30% { transform: translateX(-2.2%); }
+  65% { transform: translateX(-0.6%); }
+}
+
+@keyframes rope-jerk-b {
+  30% { transform: translateX(2.2%); }
+  65% { transform: translateX(0.6%); }
+}
+
+.arena.is-pulling-a .rope__pin,
+.arena.is-pulling-b .rope__pin {
+  animation: pin-pop 420ms var(--ease);
+}
+
+@keyframes pin-pop {
+  45% { transform: translate(-50%, -50%) scale(1.55); }
+}
+
+.arena.is-pulling-a .arena__vs,
+.arena.is-pulling-b .arena__vs {
+  animation: vs-thump 480ms var(--ease);
+}
+
+@keyframes vs-thump {
+  0%, 100% { transform: translate(-50%, 50%) scale(1); }
+  35% { transform: translate(-50%, 50%) scale(1.2); }
+}
+
+.arena.is-pulling-a .side--a .char__sprite {
+  animation: pull-a 620ms var(--ease);
+}
+
+.arena.is-pulling-b .side--b .char__sprite {
+  animation: pull-b 620ms var(--ease);
+}
+
+@keyframes pull-a {
+  25% { transform: translate(-12px, -3px) rotate(-7deg); }
+  60% { transform: translate(-4px, -1px) rotate(-2deg); }
+}
+
+@keyframes pull-b {
+  25% { transform: translate(12px, -3px) rotate(7deg); }
+  60% { transform: translate(4px, -1px) rotate(2deg); }
+}
+
+.arena.is-shaking {
+  animation: shake 360ms var(--ease);
+}
+
+@keyframes shake {
+  20% { transform: translate(-3px, 1px); }
+  40% { transform: translate(3px, -1px); }
+  60% { transform: translate(-2px, 0); }
+}
+
+/* Chispas del tirón */
+
+.spark {
+  position: absolute;
+  z-index: 8;
+  width: 6px;
+  height: 6px;
+  background: var(--gold);
+  pointer-events: none;
+  animation: spark 620ms var(--ease) forwards;
+}
+
+@keyframes spark {
+  from {
+    opacity: 1;
+    transform: translate(-50%, -50%) translate(0, 0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -50%) translate(var(--dx), var(--dy)) scale(0.3);
+  }
+}
+
+/* Confeti */
+
+.confetti {
+  position: fixed;
+  inset: 0;
+  z-index: 950;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.confetti i {
+  position: absolute;
+  top: -20px;
+  width: 8px;
+  height: 12px;
+  background: var(--c);
+  animation: confetti-fall var(--d) linear var(--delay) forwards;
+}
+
+@keyframes confetti-fall {
+  to {
+    transform: translateY(105vh) rotate(720deg);
+  }
+}
+

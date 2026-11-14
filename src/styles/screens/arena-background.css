@@ -1,0 +1,466 @@
+/* Escenario de la Arena */
+.arena {
+  --char-size: 92px;
+  --char-bottom: 14%;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 200px;
+  overflow: hidden;
+  background: #090b16;
+  isolation: isolate;
+}
+
+.arena__sky {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(120% 90% at 50% 112%, #2c2d4e 0%, transparent 62%),
+    linear-gradient(180deg, #06070f 0%, #0b0e20 38%, #161a32 70%, #232641 100%);
+}
+
+/* Nebulosas suaves del fondo */
+.arena__nebula {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(28px);
+  mix-blend-mode: screen;
+}
+
+.arena__nebula--violet {
+  left: -18%;
+  top: -38%;
+  width: 74%;
+  height: 88%;
+  background: radial-gradient(circle at 50% 50%, rgba(129, 96, 214, 0.44), rgba(129, 96, 214, 0) 68%);
+  animation: nebula-a 28s ease-in-out infinite alternate;
+}
+
+.arena__nebula--teal {
+  right: -14%;
+  top: -12%;
+  width: 62%;
+  height: 72%;
+  background: radial-gradient(circle at 50% 50%, rgba(93, 212, 170, 0.28), rgba(93, 212, 170, 0) 70%);
+  animation: nebula-b 36s ease-in-out infinite alternate;
+}
+
+@keyframes nebula-a {
+  to { transform: translate3d(4%, 3%, 0) scale(1.08); }
+}
+
+@keyframes nebula-b {
+  to { transform: translate3d(-3%, 4%, 0) scale(1.12); }
+}
+
+.arena__stars {
+  position: absolute;
+  inset: 0;
+  opacity: 0.72;
+  background-repeat: repeat;
+  background-size: 420px 300px;
+  background-image:
+    radial-gradient(1.5px 1.5px at 20px 30px, rgba(255, 255, 255, 0.9), transparent 55%),
+    radial-gradient(1.5px 1.5px at 140px 90px, rgba(255, 255, 255, 0.55), transparent 55%),
+    radial-gradient(2px 2px at 260px 40px, rgba(255, 240, 200, 0.8), transparent 55%),
+    radial-gradient(1.5px 1.5px at 340px 140px, rgba(255, 255, 255, 0.5), transparent 55%),
+    radial-gradient(1.5px 1.5px at 80px 180px, rgba(200, 220, 255, 0.6), transparent 55%),
+    radial-gradient(1px 1px at 300px 230px, rgba(255, 255, 255, 0.7), transparent 55%),
+    radial-gradient(1.5px 1.5px at 200px 260px, rgba(255, 255, 255, 0.4), transparent 55%);
+  animation: twinkle 7s ease-in-out infinite alternate;
+}
+
+/* Segunda capa - estrellas más cercanas y algunos destellos en cruz */
+.arena__stars--near {
+  opacity: 0.45;
+  background-size: 560px 380px;
+  background-image:
+    radial-gradient(2px 2px at 60px 70px, rgba(202, 233, 244, 0.9), transparent 55%),
+    radial-gradient(1px 5px at 230px 40px, rgba(202, 233, 244, 0.85), transparent 60%),
+    radial-gradient(5px 1px at 230px 40px, rgba(202, 233, 244, 0.85), transparent 60%),
+    radial-gradient(2px 2px at 420px 200px, rgba(255, 194, 212, 0.85), transparent 55%),
+    radial-gradient(1px 4px at 330px 300px, rgba(255, 255, 255, 0.8), transparent 60%),
+    radial-gradient(4px 1px at 330px 300px, rgba(255, 255, 255, 0.8), transparent 60%),
+    radial-gradient(1.5px 1.5px at 500px 120px, rgba(199, 182, 255, 0.9), transparent 55%);
+  animation-duration: 9s;
+  animation-delay: -3s;
+}
+
+@keyframes twinkle {
+  to { opacity: 0.3; }
+}
+
+/* Planeta anillado del fondo */
+.arena__planet {
+  position: absolute;
+  top: 7%;
+  right: 9%;
+  width: clamp(64px, 9vw, 124px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background:
+    repeating-linear-gradient(174deg, rgba(90, 52, 106, 0.16) 0 8px, rgba(90, 52, 106, 0) 8px 17px),
+    radial-gradient(circle at 32% 28%, #f2e2c9 0%, #e2c3ab 34%, #c08ba3 58%, #754b78 80%, #33243f 100%);
+  box-shadow:
+    inset -10px -12px 24px rgba(10, 8, 20, 0.65),
+    0 0 46px rgba(226, 195, 171, 0.18);
+  opacity: 0.95;
+}
+
+.arena__planet::before,
+.arena__planet::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 52%;
+  width: 192%;
+  height: 46%;
+  transform: translate(-50%, -50%) rotate(-16deg);
+  border-radius: 50%;
+  border: 5px solid rgba(226, 195, 171, 0.34);
+  box-shadow: 0 0 14px rgba(199, 182, 255, 0.2);
+}
+
+.arena__planet::after {
+  width: 214%;
+  height: 54%;
+  border-width: 2px;
+  border-color: rgba(199, 182, 255, 0.2);
+  transform: translate(-50%, -50%) rotate(-16deg);
+}
+
+.arena__moon {
+  position: absolute;
+  top: 13%;
+  left: 7%;
+  width: clamp(24px, 3.6vw, 46px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #efeaff, #b9b0dd 55%, #6c6296 85%, #413a63 100%);
+  box-shadow:
+    inset -4px -4px 10px rgba(20, 16, 40, 0.5),
+    0 0 26px rgba(199, 182, 255, 0.28);
+  opacity: 0.9;
+}
+
+.arena__moon::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 62% 38%, rgba(70, 62, 104, 0.4) 0 12%, transparent 13%),
+    radial-gradient(circle at 38% 64%, rgba(70, 62, 104, 0.32) 0 9%, transparent 10%);
+}
+
+/* Estrella fugaz */
+.arena__shoot {
+  position: absolute;
+  top: 16%;
+  left: 8%;
+  width: 96px;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, rgba(202, 233, 244, 0), #cae9f4 68%, #ffffff);
+  filter: drop-shadow(0 0 5px rgba(202, 233, 244, 0.9));
+  opacity: 0;
+  transform: rotate(12deg);
+  animation: shoot 13s linear infinite;
+}
+
+@keyframes shoot {
+  0%, 82% { opacity: 0; transform: translate3d(0, 0, 0) rotate(12deg); }
+  84% { opacity: 0.9; }
+  90% { opacity: 0; transform: translate3d(44vw, 19vh, 0) rotate(12deg); }
+  100% { opacity: 0; }
+}
+
+/* Satélite que cruza muy despacio el fondo */
+.arena__sat {
+  position: absolute;
+  top: 27%;
+  left: 22%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  width: clamp(44px, 5.4vw, 78px);
+  height: clamp(12px, 1.6vw, 20px);
+  opacity: 0.75;
+  filter: drop-shadow(0 0 5px rgba(199, 182, 255, 0.35));
+  animation: sat-drift 30s ease-in-out infinite alternate;
+}
+
+.arena__sat-panel {
+  flex: 1 1 0;
+  height: 100%;
+  border: 1px solid #0b0b18;
+  border-radius: 2px;
+  background:
+    repeating-linear-gradient(90deg, rgba(199, 182, 255, 0.45) 0 1px, transparent 1px 5px),
+    repeating-linear-gradient(0deg, rgba(199, 182, 255, 0.32) 0 1px, transparent 1px 5px),
+    linear-gradient(180deg, #5266a3, #1e2a50);
+}
+
+.arena__sat-body {
+  flex: 0 0 20%;
+  height: 78%;
+  border: 1px solid #0b0b18;
+  border-radius: 2px;
+  background: linear-gradient(180deg, #e2c3ab, #8b7f99);
+  box-shadow: 0 0 6px rgba(226, 195, 171, 0.45);
+}
+
+@keyframes sat-drift {
+  from { transform: translate3d(0, 0, 0) rotate(-7deg); }
+  to { transform: translate3d(26px, -12px, 0) rotate(-3deg); }
+}
+
+/* Asteroides flotando en distintas profundidades */
+.arena__rocks {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.arena__rocks span {
+  position: absolute;
+  display: block;
+  background: linear-gradient(155deg, #4a4468 0 20%, #2a2744 55%, #151327 100%);
+  clip-path: polygon(18% 0, 76% 8%, 100% 46%, 74% 100%, 26% 90%, 0 44%);
+  filter: drop-shadow(0 -1px 0 rgba(199, 182, 255, 0.25));
+  animation: float-rock 7s ease-in-out infinite;
+}
+
+.arena__rocks span:nth-child(1) {
+  left: 13%;
+  top: 24%;
+  width: 26px;
+  height: 20px;
+  opacity: 0.8;
+  animation-duration: 8s;
+}
+
+.arena__rocks span:nth-child(2) {
+  right: 22%;
+  top: 38%;
+  width: 16px;
+  height: 13px;
+  opacity: 0.6;
+  animation-duration: 6s;
+  animation-delay: -2s;
+}
+
+.arena__rocks span:nth-child(3) {
+  left: 46%;
+  top: 12%;
+  width: 11px;
+  height: 9px;
+  opacity: 0.5;
+  animation-duration: 9s;
+  animation-delay: -4s;
+}
+
+@keyframes float-rock {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -6px; }
+}
+
+/* Cordilleras alienígenas en dos capas. */
+.arena__ridge {
+  position: absolute;
+  left: -2%;
+  right: -2%;
+  bottom: 12%;
+  height: 26%;
+  background: linear-gradient(180deg, #2f2f52 0%, #1a1c33 70%, #121424 100%);
+  clip-path: polygon(0 58%, 7% 44%, 15% 56%, 24% 34%, 33% 52%, 42% 40%, 52% 55%, 61% 37%, 71% 52%, 80% 42%, 90% 56%, 100% 46%, 100% 100%, 0 100%);
+  opacity: 0.85;
+  filter: drop-shadow(0 -2px 0 rgba(199, 182, 255, 0.14));
+}
+
+.arena__ridge--far {
+  bottom: 17%;
+  height: 23%;
+  background: linear-gradient(180deg, #3a3760 0%, #22243e 100%);
+  opacity: 0.5;
+  transform: scaleX(-1);
+  filter: drop-shadow(0 -1px 0 rgba(93, 212, 170, 0.16));
+}
+
+/* Cristales */
+.arena__crystals {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.arena__crystal {
+  position: absolute;
+  bottom: 9%;
+  width: clamp(14px, 1.8vw, 26px);
+  height: clamp(38px, 5vw, 74px);
+  background: linear-gradient(180deg, rgba(202, 244, 255, 0.95), rgba(93, 212, 170, 0.8) 38%, rgba(93, 212, 170, 0.12) 100%);
+  clip-path: polygon(50% 0, 100% 30%, 78% 100%, 22% 100%, 0 30%);
+  filter: drop-shadow(0 0 8px rgba(93, 212, 170, 0.45));
+  opacity: 0.55;
+  animation: crystal-pulse 5s ease-in-out infinite;
+}
+
+.arena__crystal--1 { left: 3%; height: clamp(44px, 6vw, 86px); }
+.arena__crystal--2 { left: 9%; height: clamp(26px, 3.4vw, 48px); opacity: 0.4; animation-delay: -1.6s; }
+.arena__crystal--3 { right: 4%; height: clamp(40px, 5.4vw, 78px); background: linear-gradient(180deg, rgba(255, 226, 234, 0.95), rgba(255, 138, 174, 0.8) 40%, rgba(255, 138, 174, 0.12) 100%); filter: drop-shadow(0 0 8px rgba(255, 138, 174, 0.45)); animation-delay: -0.9s; }
+.arena__crystal--4 { right: 10%; height: clamp(22px, 3vw, 44px); opacity: 0.38; background: linear-gradient(180deg, rgba(233, 226, 255, 0.95), rgba(199, 182, 255, 0.75) 40%, rgba(199, 182, 255, 0.12) 100%); filter: drop-shadow(0 0 8px rgba(199, 182, 255, 0.4)); animation-delay: -2.4s; }
+
+@keyframes crystal-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.68; }
+}
+
+/* Superficie de asteroide */
+.arena__ground {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 16%;
+  background:
+    radial-gradient(90% 60% at 50% 0%, rgba(93, 212, 170, 0.07), transparent 62%),
+    linear-gradient(180deg, #232641 0%, #141728 60%, #0a0c16 100%);
+  border-top: 1px solid rgba(199, 182, 255, 0.22);
+  box-shadow: 0 -18px 36px rgba(0, 0, 0, 0.5);
+}
+
+.arena__ground::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: 8%;
+  right: 8%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(93, 212, 170, 0.55), rgba(199, 182, 255, 0.4), rgba(255, 138, 174, 0.55), transparent);
+  filter: blur(0.4px);
+}
+
+.arena__ground::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(1.5px 1.5px at 12px 18px, rgba(199, 182, 255, 0.18), transparent 60%),
+    radial-gradient(1.5px 1.5px at 60px 44px, rgba(93, 212, 170, 0.14), transparent 60%),
+    radial-gradient(1px 1px at 110px 25px, rgba(255, 255, 255, 0.12), transparent 60%);
+  background-size: 140px 70px;
+  opacity: 0.8;
+}
+
+.arena__center {
+  position: absolute;
+  left: 50%;
+  bottom: 13%;
+  width: 2px;
+  height: 24%;
+  transform: translateX(-50%);
+  background: repeating-linear-gradient(
+    180deg,
+    rgba(250, 186, 45, 0.72) 0 7px,
+    transparent 7px 14px
+  );
+  opacity: 0.8;
+  filter: drop-shadow(0 0 4px rgba(250, 186, 45, 0.45));
+  z-index: 4;
+}
+
+.arena__center::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -7px;
+  width: 13px;
+  height: 13px;
+  transform: translateX(-50%);
+  background: var(--gold);
+  clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+  filter: drop-shadow(0 0 6px rgba(250, 186, 45, 0.85));
+}
+
+/* Emblema VS del Centro */
+.arena__vs {
+  position: absolute;
+  left: 50%;
+  bottom: calc(var(--char-bottom) + var(--char-size) * 0.18);
+  z-index: 9;
+  transform: translate(-50%, 50%);
+  transform-origin: center;
+  pointer-events: none;
+}
+
+/* Chispas y efectos del VS */
+.arena__vs::before {
+  content: '';
+  position: absolute;
+  inset: -26px -34px;
+  background:
+    radial-gradient(circle at 20% 30%, rgba(255, 243, 207, 0.9) 0 1.5px, transparent 2px),
+    radial-gradient(circle at 82% 24%, rgba(255, 243, 207, 0.8) 0 1.2px, transparent 2px),
+    radial-gradient(circle at 74% 78%, rgba(255, 243, 207, 0.85) 0 1.4px, transparent 2px),
+    radial-gradient(circle at 16% 74%, rgba(255, 243, 207, 0.7) 0 1.2px, transparent 2px);
+  animation: vs-twinkle 2.2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.arena__vs-badge {
+  position: relative;
+  z-index: 1;
+  display: block;
+  padding: 7px 12px 6px;
+  border: 2px solid #fff3cf;
+  border-radius: 4px;
+  overflow: hidden;
+  font-family: var(--font-display);
+  font-size: clamp(0.75rem, 1.6vw, 1.20rem);
+  line-height: 1;
+  letter-spacing: 0.02em;
+  color: #2a1c02;
+  background: linear-gradient(180deg, #fff7d6 0%, #ffd75e 34%, #faba2d 64%, #c9861a 100%);
+  box-shadow:
+    0 0 0 3px rgba(7, 8, 15, 0.72),
+    0 0 16px rgba(250, 186, 45, 0.75),
+    0 0 44px rgba(250, 186, 45, 0.35),
+    inset 0 2px 0 rgba(255, 255, 255, 0.85),
+    inset 0 -3px 0 rgba(120, 74, 0, 0.45);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.55);
+  transform-origin: center;
+  backface-visibility: hidden;
+  will-change: scale;
+  animation: vs-aura 2.8s ease-in-out infinite;
+}
+
+/* Destello que recorre el VS */
+.arena__vs-badge::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg, transparent 32%, rgba(255, 255, 255, 0.85) 48%, transparent 64%);
+  background-size: 260% 100%;
+  mix-blend-mode: screen;
+  animation: vs-shine 4.2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes vs-aura {
+  0%, 100% { scale: 1; }
+  50% { scale: 1.04; }
+}
+
+@keyframes vs-shine {
+  0%, 55% { background-position: 180% 0; }
+  85%, 100% { background-position: -80% 0; }
+}
+
+@keyframes vs-twinkle {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 1; }
+}
+

@@ -1,0 +1,149 @@
+/* Jugador (móviles) */
+
+.play {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  min-height: 100vh;
+  min-height: 100svh;
+  background:
+    radial-gradient(90% 40% at 50% 0%, #15182b, transparent 70%),
+    var(--bg-0);
+}
+
+@media (min-width: 660px) {
+  .play {
+    width: min(540px, 100%);
+    margin: 0 auto;
+    border-inline: 1px solid var(--line-soft);
+    box-shadow: 0 0 120px rgba(0, 0, 0, 0.7);
+  }
+}
+
+.play__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: calc(10px + env(safe-area-inset-top)) 14px 10px;
+  border-bottom: 1px solid var(--line-soft);
+  background: rgba(7, 8, 15, 0.9);
+}
+
+.play__nick {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-ui);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+}
+
+.play__streak {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 9px 3px 7px;
+  border: 2px solid var(--line);
+  border-radius: 4px;
+  background: rgba(20, 17, 38, 0.8);
+  color: var(--text-mute);
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  line-height: 1.3;
+  font-variant-numeric: tabular-nums;
+  transition: border-color var(--fast) var(--ease), color var(--fast) var(--ease), box-shadow var(--fast) var(--ease);
+}
+
+.play__flame {
+  width: 12px;
+  height: 15px;
+  filter: grayscale(1) opacity(0.4);
+  transform-origin: 50% 100%;
+  transition: filter var(--fast) var(--ease);
+}
+
+.play__streak.is-on {
+  border-color: #ff8a2a;
+  color: var(--gold);
+  box-shadow: 0 0 14px rgba(255, 140, 40, 0.28);
+}
+
+.play__streak.is-on .play__flame {
+  filter: drop-shadow(0 0 5px rgba(255, 140, 40, 0.85));
+}
+
+.play__streak.is-hot .play__flame {
+  animation: flame-flicker 520ms steps(2, end) infinite;
+}
+
+.play__streak.is-bump {
+  animation: streak-bump 480ms var(--ease);
+}
+
+@keyframes streak-bump {
+  40% { transform: scale(1.22); }
+}
+
+.play__conn {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--team-a);
+  box-shadow: 0 0 10px var(--team-a);
+}
+
+.play__conn.is-off {
+  background: var(--danger);
+  box-shadow: 0 0 10px var(--danger);
+}
+
+.play__main {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 16px 14px calc(16px + env(safe-area-inset-bottom));
+}
+
+.play-wait {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 14px;
+  text-align: center;
+  flex: 1;
+  padding: 20px;
+}
+
+.play-wait__code {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  letter-spacing: 0.14em;
+  color: var(--gold);
+}
+
+.spinner {
+  width: 34px;
+  height: 34px;
+  border: 3px solid var(--line);
+  border-top-color: var(--gold);
+  border-radius: 50%;
+  animation: spin 900ms linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.roster {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  max-width: 400px;
+}
+
+.roster .player-chip {
+  font-size: 0.6rem;
+}
+

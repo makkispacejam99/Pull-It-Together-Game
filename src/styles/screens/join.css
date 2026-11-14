@@ -1,0 +1,165 @@
+/* Unirse */
+
+.join {
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+  min-height: 100svh;
+  padding: 24px 16px;
+  background:
+    radial-gradient(70% 50% at 50% 20%, #171a2c, transparent 70%),
+    var(--bg-0);
+}
+
+.join__card {
+  width: min(480px, 100%);
+  display: grid;
+  gap: 16px;
+  padding: clamp(18px, 4vw, 30px);
+  animation: rise-in 300ms var(--ease) both;
+}
+
+.join__head {
+  display: grid;
+  gap: 4px;
+  text-align: center;
+}
+
+.join__code {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  letter-spacing: 0.16em;
+  color: var(--gold);
+}
+
+.join__teams {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.pick-team {
+  display: grid;
+  gap: 4px;
+  justify-items: center;
+  padding: 12px 8px;
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg-1);
+  transition: all var(--fast) var(--ease);
+}
+
+.pick-team b {
+  font-family: var(--font-ui);
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.pick-team span {
+  font-family: var(--font-ui);
+  font-size: 0.58rem;
+  color: var(--text-mute);
+}
+
+.pick-team--a b { color: var(--team-a); }
+.pick-team--b b { color: var(--team-b); }
+
+.pick-team.is-on {
+  border-color: currentColor;
+  box-shadow: inset 0 0 0 1px currentColor;
+}
+
+.pick-team--a.is-on { background: rgba(93, 212, 170, 0.1); color: var(--team-a); }
+.pick-team--b.is-on { background: rgba(255, 138, 174, 0.1); color: var(--team-b); }
+
+.avatar-pick {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg-1);
+}
+
+.avatar-pick__view {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border: 2px solid var(--line-soft);
+  border-radius: var(--radius);
+  background: var(--bg-2);
+}
+
+.avatar-pick__view img {
+  width: 56px;
+  height: 56px;
+}
+
+.avatar-pick__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.avatar-pick__label {
+  font-family: var(--font-ui);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.avatar-pick__name {
+  font-family: var(--font-ui);
+  font-size: 0.8rem;
+  color: var(--text);
+}
+
+.avatar-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.avatar-dot {
+  width: 40px;
+  height: 40px;
+  padding: 2px;
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg-2);
+  transition: border-color var(--fast) var(--ease), transform var(--fast) var(--ease);
+}
+
+.avatar-dot img {
+  width: 100%;
+  height: 100%;
+}
+
+.avatar-dot.is-on {
+  border-color: var(--gold);
+  transform: translateY(-2px);
+}
+
+/* En móviles estrechos los 5 avatares caben en una sola fila. */
+@media (max-width: 420px) {
+  .avatar-row {
+    gap: 5px;
+  }
+  .avatar-dot {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+.join__error {
+  padding: 10px 12px;
+  border: 2px solid var(--team-b-deep);
+  border-radius: var(--radius);
+  background: rgba(255, 138, 174, 0.08);
+  color: var(--team-b-soft);
+  font-size: 0.9rem;
+}
+

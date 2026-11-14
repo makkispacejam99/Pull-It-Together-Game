@@ -1,0 +1,224 @@
+/* Personajes */
+
+.side {
+  position: absolute;
+  bottom: var(--char-bottom);
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  width: 50%;
+}
+
+.side--a {
+  left: 0;
+  align-items: flex-end;
+}
+
+.side--b {
+  right: 0;
+  align-items: flex-start;
+}
+
+.row {
+  display: flex;
+  align-items: flex-end;
+  width: 100%;
+}
+
+.side--a .row {
+  justify-content: flex-end;
+}
+
+.side--b .row {
+  justify-content: flex-start;
+}
+
+.row--back {
+  z-index: 1;
+  margin-bottom: calc(var(--char-size) * -0.22);
+  transform: scale(0.78);
+  transform-origin: bottom;
+}
+
+.side--a .row--back { transform-origin: bottom right; }
+.side--b .row--back { transform-origin: bottom left; }
+
+.row--front {
+  z-index: 2;
+}
+
+.char {
+  position: relative;
+  flex: 0 0 auto;
+  width: var(--char-size);
+  margin-inline-start: calc(var(--char-size) * var(--char-overlap, -0.16));
+}
+
+.char:first-child {
+  margin-inline-start: 0;
+}
+
+.char__sprite {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  scale: var(--char-scale, 1);
+  transform-origin: bottom center;
+  animation: bob 1.9s ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
+  will-change: transform;
+}
+
+.char__sprite img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.45));
+  transform: translateZ(0);
+}
+
+.char__sprite img.pa,
+.char__sprite img.pb,
+.char__sprite img.pc {
+  opacity: 0;
+}
+
+/* Efecto espejo para equipo rival */
+.side--b .char__sprite img {
+  scale: -1 1;
+}
+
+.arena.is-step .char__sprite img.pi {
+  opacity: 0;
+}
+
+.arena.is-step .char__sprite img.pa {
+  opacity: 0;
+}
+
+.arena.is-step .char__sprite img.pb {
+  opacity: 1;
+}
+
+/* Pose de esfuerzo durante el tirón. */
+.arena.is-tug .char__sprite img.pi,
+.arena.is-tug .char__sprite img.pa,
+.arena.is-tug .char__sprite img.pb {
+  opacity: 0;
+}
+
+.arena.is-tug .char__sprite img.pc {
+  opacity: 1;
+}
+
+.arena.is-tug .char__sprite {
+  animation: strain-a 900ms ease-in-out infinite;
+}
+
+.arena.is-tug .side--b .char__sprite {
+  animation-name: strain-b;
+}
+
+@keyframes strain-a {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  50% { transform: translate(-4px, -1px) rotate(-3.5deg); }
+}
+
+@keyframes strain-b {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  50% { transform: translate(4px, -1px) rotate(3.5deg); }
+}
+
+@keyframes bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+.char__name {
+  position: absolute;
+  bottom: calc(100% - 2px + var(--char-lift, 0px));
+  left: 50%;
+  transform: translateX(-50%) translateY(calc(var(--tag-lift, 0px) * -1));
+  z-index: 3;
+  max-width: 128%;
+  padding: 2px 5px;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--team, var(--line-bright));
+  border-radius: 2px;
+  background: rgba(7, 8, 15, 0.88);
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: max(8px, calc(var(--char-size) * 0.135));
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+}
+
+.side--a .char { --team: var(--team-a); }
+.side--b .char { --team: var(--team-b); }
+
+.char__base {
+  position: absolute;
+  left: 50%;
+  bottom: -4%;
+  width: 62%;
+  height: 12%;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, var(--team, #fff) 0%, transparent 70%);
+  opacity: 0.22;
+  filter: blur(1px);
+  z-index: -1;
+}
+
+.side--a .char__base { --team: var(--team-a); }
+.side--b .char__base { --team: var(--team-b); }
+
+.char.is-voted .char__sprite img {
+  filter:
+    drop-shadow(0 0 8px rgba(255, 255, 255, 0.45))
+    drop-shadow(0 6px 10px rgba(0, 0, 0, 0.45));
+}
+
+@media (max-width: 760px) {
+  .char__name {
+    font-size: max(10px, calc(var(--char-size) * 0.15));
+  }
+}
+
+.char.is-voted .char__name {
+  border-color: var(--gold);
+  border-left-color: var(--gold);
+  color: var(--gold);
+}
+
+.char.is-correct .char__sprite img {
+  filter:
+    drop-shadow(0 0 10px rgba(93, 212, 170, 0.7))
+    drop-shadow(0 6px 10px rgba(0, 0, 0, 0.4));
+}
+
+.char.is-wrong .char__sprite img {
+  filter:
+    grayscale(0.6) brightness(0.7)
+    drop-shadow(0 6px 10px rgba(0, 0, 0, 0.4));
+}
+
+/* Efecto de ventaja de equipo */
+.arena.lead-a .side--a .char__base,
+.arena.lead-b .side--b .char__base {
+  opacity: 0.55;
+  filter: blur(2px);
+}
+
+.arena.lead-a .side--b .char__sprite,
+.arena.lead-b .side--a .char__sprite {
+  opacity: 0.72;
+}
+
