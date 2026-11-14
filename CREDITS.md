@@ -4,7 +4,6 @@
 
 **New Platformer Pack** — Kenney (https://kenney.nl/assets/new-platformer-pack)
 Licencia: **Creative Commons CC0 1.0 Universal** (dominio público).
-No requiere atribución, pero se acredita por respeto al autor.
 
 Archivos usados:
 

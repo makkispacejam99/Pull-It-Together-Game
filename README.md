@@ -28,7 +28,7 @@ Pull It Together es un juego inspirado en el tira y afloja (Tug of War) donde 2 
 1. Clona el repositorio o descarga el proyecto.
 2. Ejecuta el script de PowerShell para levantar el servidor local:
    ```powershell
-   pwsh -File tools/serve.ps1
+   pwsh tools/serve.ps1 -Port 8080
 
 Abre tu navegador en http://localhost:5173/.
 
@@ -47,7 +47,7 @@ Abre tu navegador en http://localhost:5173/.
 Supabase y SQL
 
 ## Créditos 
- * **Arte y Sonido:** Kenney New Platformer Pack (CC0), 50 Menu Interface SFX por ColorAlpha (CC0), Poopie Pack por Chajamakesmusic (CC0)
+ * **Arte y Sonido:** New Platformer Pack by Kenney (CC0), UI Sound Effects by lolurio (CC0), Universal UI Soundpack by Nathan Gibson  (CC0), Poopie Pack by Chajamakesmusic (CC0)
  * **Tipografías:** Press Start 2P y Jersey 15 bajo licencia SIL Open Font License.
 
 Creado con ❤️ por MakkiDEV 
