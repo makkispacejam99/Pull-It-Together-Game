@@ -1,5 +1,6 @@
 import { esc, fmtMs } from '../../../core/utils.js';
 import { play } from '../../../core/audio.js';
+import { showFeedback } from './feedback.js';
 
 const LETTERS = ['A', 'B', 'C', 'D'];
 
@@ -62,6 +63,14 @@ export function buildReveal(ctx, state) {
 
         <p class="tiny muted center">Siguiente ronda en <span data-next>7</span>s</p>
       </div>`;
+
+      showFeedback(main, {
+    correct,
+    voted: Boolean(detail),
+    streak: myPlayer.streak || 0,
+    round: state.round,
+    ms: detail?.ms || 0,
+  });
 
   const next = main.querySelector('[data-next]');
   startTimer(state, (remaining) => {

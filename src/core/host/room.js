@@ -256,7 +256,10 @@ export class HostRoom {
     const individuals = {};
     for (const p of participants) {
       const vote = this.votes[p.id];
-      if (!vote) continue;
+      if (!vote) {
+        p.streak = 0;
+        continue;
+      }
       const correct = vote.choice === this.correctIndex;
       const points = individualPoints({ correct, ms: vote.ms, durationMs: duration });
       p.score += points;

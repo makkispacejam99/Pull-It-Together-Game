@@ -1,6 +1,8 @@
 /* Reveal móvil */
 
 .reveal-card {
+  position: relative;
+  margin-block: auto;
   display: grid;
   gap: 12px;
   animation: rise-in 300ms var(--ease) both;

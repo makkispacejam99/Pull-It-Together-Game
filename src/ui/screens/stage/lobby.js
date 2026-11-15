@@ -166,7 +166,7 @@ export function createLobbyView(ctx) {
 
     root.querySelector('[data-bots]').addEventListener('click', () => {
       host.addBots(4);
-      toast('Bots añadidos para la demo', 'ok');
+      toast('¡La CPU entra a la partida!', 'ok');
     });
 
     root.querySelector('[data-seg="rounds"]').addEventListener('click', (event) => {

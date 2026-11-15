@@ -253,3 +253,74 @@
   text-transform: uppercase;
 }
 
+.home__report {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text-mute);
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.home__report:hover {
+  color: var(--gold);
+}
+
+textarea.input {
+  min-height: 110px;
+  resize: vertical;
+}
+
+.btn--donate {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.donate__heart {
+  width: 14px;
+  height: 12px;
+  filter: drop-shadow(0 0 5px rgba(255, 92, 138, 0.7));
+  transform-origin: 50% 60%;
+  animation: heart-beat 2.8s ease-in-out infinite;
+}
+
+.btn--donate:hover {
+  border-color: #ff5c8a;
+}
+
+@keyframes heart-beat {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.07); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .donate__heart { animation: none; }
+}
+
+.report-sent {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  text-align: center;
+}
+
+.report-sent__icon {
+  width: 46px;
+  height: 31px;
+  color: var(--team-a);
+  filter: drop-shadow(0 0 10px rgba(78, 224, 166, 0.55));
+  animation: pop-in 360ms var(--ease) both;
+}
+
+.report-sent__title {
+  font-family: var(--font-ui);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
