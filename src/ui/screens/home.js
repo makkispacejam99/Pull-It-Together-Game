@@ -4,6 +4,7 @@ import { isMuted, toggleMuted } from '../../core/audio.js';
 import { roomCode } from '../../core/utils.js';
 import { decorateHomeScene } from '../../game/scene.js';
 import { toast } from '../toast.js';
+import { openReport } from '../report.js';
 
 const FEATURES = [
   {
@@ -35,6 +36,13 @@ export function renderHome(root) {
             <span>PULL IT TOGETHER</span>
           </a>
           <nav class="topbar__nav">
+            <a class="btn btn--ghost btn--sm btn--donate" href="https://ko-fi.com/makkispacejam" target="_blank" rel="noopener noreferrer">
+              <svg class="donate__heart" viewBox="0 0 9 8" shape-rendering="crispEdges" aria-hidden="true" focusable="false">
+                <path fill="#ff5c8a" d="M1 0h2v1H1zM6 0h2v1H6zM0 1h4v1H0zM5 1h4v1H5zM0 2h9v2H0zM1 4h7v1H1zM2 5h5v1H2zM3 6h3v1H3zM4 7h1v1H4z"/>
+                <path fill="#ffb3cb" d="M1 1h2v1H1z"/>
+              </svg>
+              Donar
+            </a>
             <a class="btn btn--ghost btn--sm" href="#/admin">Preguntas</a>
             <button class="btn btn--ghost btn--sm" data-audio aria-label="Sonido">${isMuted() ? '♪̸' : '♪'}</button>
           </nav>
@@ -78,6 +86,7 @@ export function renderHome(root) {
         </p>
         <div class="home__credits">
           <span>Arte y sonido: Kenney, ColorAlpha y Chajamakesmusic (CC0)</span>
+          <button type="button" class="home__report" data-report>¿Algo salió mal o tienes una sugerencia? Cuéntanos</button>
         </div>
       </footer>
     </div>
@@ -85,6 +94,7 @@ export function renderHome(root) {
 
   const scene = decorateHomeScene(root.querySelector('#homeScene'));
   const audioBtn = root.querySelector('[data-audio]');
+  root.querySelector('[data-report]').addEventListener('click', openReport);
 
   audioBtn.addEventListener('click', () => {
     const muted = toggleMuted();

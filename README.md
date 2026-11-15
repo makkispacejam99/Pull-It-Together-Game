@@ -30,7 +30,8 @@ Pull It Together es un juego inspirado en el tira y afloja (Tug of War) donde 2 
    ```powershell
    pwsh tools/serve.ps1 -Port 8080
 
-Abre tu navegador en http://localhost:5173/.
+Abre tu navegador en http://localhost:8080/.
+**Nota:** el puerto (8080) en la url debe cambiarse por el port que tengas disponible y que hayas asignado en -Port "Tu Port".
 
 ## ¿Cómo probarlo?
 * Abre la aplicación en tu navegador y pulsa "Crear sala". 
