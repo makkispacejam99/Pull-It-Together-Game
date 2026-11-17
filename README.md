@@ -10,7 +10,7 @@ Un juego de trivia multijugador en tiempo real donde dos equipos tiran de una cu
 [![Built with Vanilla JS](https://img.shields.io/badge/Stack-Vanilla%20JS%20%2F%20Supabase-orange.svg)](https://supabase.com)
 
 
-<img width="720px" src="screenshots/pull-it-together.png">
+<img width="720px" src="screenshots/pull-it-together.png" style="border-radius: 15px;">
 </div>
 
 ## ¿De qué trata?
@@ -31,6 +31,7 @@ Pull It Together es un juego inspirado en el tira y afloja (Tug of War) donde 2 
    pwsh tools/serve.ps1 -Port 8080
 
 Abre tu navegador en http://localhost:8080/.
+
 **Nota:** el puerto (8080) en la url debe cambiarse por el port que tengas disponible y que hayas asignado en -Port "Tu Port".
 
 ## ¿Cómo probarlo?
