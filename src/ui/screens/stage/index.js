@@ -4,6 +4,7 @@ import { duckMusic, play, startMusic, stopMusic } from '../../../core/audio.js';
 import { toast } from '../../toast.js';
 import { createLobbyView } from './lobby.js';
 import { createGameView } from './game.js';
+import { writeJSON } from '../../../core/utils.js';
 import { createResultsView } from './results.js';
 
 export function renderStage(root, params = {}) {
@@ -27,6 +28,8 @@ export function renderStage(root, params = {}) {
       </div>`;
     return null;
   }
+  
+  writeJSON('tyg.lastHost', code);
 
   let mode = '';
   let scene = null;

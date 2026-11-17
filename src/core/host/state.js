@@ -11,7 +11,7 @@ export function createState(code) {
     status: 'lobby',
     config: {
       rounds: totalRounds,
-      duration: 45,
+      duration: 44,
       difficulty: 'all',
       categories: [],
     },

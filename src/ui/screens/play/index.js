@@ -1,7 +1,9 @@
 import { clearMe, loadMe } from '../../../net/bus.js';
 import { PlayerClient } from '../../../core/client.js';
+import { duckMusic, isMuted, startMusic, stopMusic, toggleMuted } from '../../../core/audio.js';
 import { clamp, esc } from '../../../core/utils.js';
 import { toast } from '../../toast.js';
+import { openModal } from '../../modal.js';
 import { buildWait, buildCountdown } from './wait.js';
 import { buildQuestion, syncQuestion } from './question.js';
 import { buildReveal } from './reveal.js';
@@ -26,8 +28,10 @@ export function renderPlay(root, params = {}) {
   root.innerHTML = `
     <div class="play">
       <header class="play__head">
+        <button class="btn btn--ghost btn--sm play__leave" type="button" data-leave>Salir</button>
         <span class="chip chip--a" data-team-chip>MARCIANOS</span>
         <span class="play__nick">${esc(me.nickname)}</span>
+        <button class="btn btn--ghost btn--sm play__sound" type="button" data-sound aria-label="Sonido" aria-pressed="true"><span data-sound-icon>${isMuted() ? '♪̸' : '♪'}</span></button>
         <span class="play__streak" data-streak title="Tu racha de aciertos">${FLAME_SVG}<b data-streak-num>0</b></span>
         <span class="play__conn" data-conn title="Conexión"></span>
       </header>
@@ -63,6 +67,35 @@ export function renderPlay(root, params = {}) {
   let timerId = null;
   let joinTimeout = null;
   let destroyed = false;
+  let localLobby = false;
+  let musicWanted = false;
+  let lastStatus = '';
+
+  const soundBtn = root.querySelector('[data-sound]');
+  const soundIcon = root.querySelector('[data-sound-icon]');
+
+  function syncSound() {
+    const muted = isMuted();
+    soundIcon.textContent = muted ? '♪̸' : '♪';
+    soundBtn.setAttribute('aria-pressed', String(!muted));
+  }
+
+  function applyMusic(status) {
+    if (status === 'countdown' || status === 'question' || status === 'reveal') {
+      musicWanted = true;
+      startMusic();
+    } else if (status === 'results') {
+      musicWanted = true;
+      duckMusic();
+    } else {
+      musicWanted = false;
+      stopMusic({ fade: 700 });
+    }
+  }
+
+  function retryMusic() {
+    if (musicWanted) startMusic();
+  }
 
   const client = new PlayerClient(code, me, {
     onState: (state) => {
@@ -117,7 +150,47 @@ export function renderPlay(root, params = {}) {
     setChoice(value) {
       myChoice = value;
     },
+    confirmLeave,
+    returnToLobby() {
+      localLobby = true;
+      stopTimer();
+      if (currentState) buildWait(ctx, currentState);
+    },
   };
+
+  root.querySelector('[data-leave]').addEventListener('click', confirmLeave);
+
+  syncSound();
+  soundBtn.addEventListener('click', () => {
+    const muted = toggleMuted();
+    syncSound();
+    if (!muted && musicWanted) startMusic();
+    toast(muted ? 'Sonido silenciado' : 'Sonido activado');
+  });
+  root.addEventListener('pointerdown', retryMusic);
+
+  function confirmLeave() {
+    const { backdrop, close } = openModal(`
+      <div class="modal panel">
+        <div class="modal__head">
+          <h2 class="modal__title">¿Abandonar la sala?</h2>
+          <button type="button" class="icon-btn" data-close aria-label="Cerrar">✕</button>
+        </div>
+        <div class="modal__body">
+          <p class="muted">¿Estás seguro que quieres abandonar la sala? Esta acción te llevará al inicio.</p>
+        </div>
+        <div class="modal__foot">
+          <button type="button" class="btn btn--ghost" data-cancel>Quedarme</button>
+          <button type="button" class="btn btn--danger" data-leave-confirm>Abandonar</button>
+        </div>
+      </div>`);
+
+    backdrop.querySelector('[data-leave-confirm]').addEventListener('click', () => {
+      close();
+      clearMe(code);
+      location.hash = '#/';
+    });
+  }
 
   client.connect();
 
@@ -146,6 +219,14 @@ export function renderPlay(root, params = {}) {
           </div>`;
       }
       return;
+    }
+
+    if (state.status === 'results' && localLobby) return;
+    if (state.status !== 'results') localLobby = false;
+
+    if (state.status !== lastStatus) {
+      lastStatus = state.status;
+      applyMusic(state.status);
     }
 
     const key = `${state.status}:${state.round}`;
@@ -213,6 +294,8 @@ export function renderPlay(root, params = {}) {
     destroyed = true;
     clearTimeout(joinTimeout);
     stopTimer();
+    stopMusic({ fade: 600 });
+    root.removeEventListener('pointerdown', retryMusic);
     client.destroy();
   };
 }

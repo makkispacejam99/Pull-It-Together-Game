@@ -15,11 +15,38 @@
 }
 
 .personal__avatar {
-  width: 96px;
-  height: 96px;
+  width: 84px;
+  height: 84px;
   filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.5));
   animation: bob 2.4s ease-in-out infinite;
 }
+
+.personal__verdict {
+  display: grid;
+  gap: 3px;
+  justify-items: center;
+}
+
+.personal__verdict-label {
+  font-family: var(--font-ui);
+  font-size: clamp(0.66rem, 2.8vw, 0.8rem);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+.personal__winner {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 7.2vw, 2.15rem);
+  line-height: 1;
+  text-transform: uppercase;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.personal__winner--a { color: var(--team-a); text-shadow: 0 3px 0 var(--team-a-deep); }
+.personal__winner--b { color: var(--team-b); text-shadow: 0 3px 0 var(--team-b-deep); }
+.personal__winner--tie { color: var(--gold); text-shadow: 0 3px 0 var(--gold-deep); }
 
 .personal__name {
   font-family: var(--font-ui);
@@ -29,7 +56,7 @@
 
 .personal__rank {
   font-family: var(--font-display);
-  font-size: clamp(1.4rem, 7vw, 2.2rem);
+  font-size: clamp(0.58rem, 2.4vw, 0.7rem);
   color: var(--gold);
   text-transform: uppercase;
 }
@@ -37,6 +64,11 @@
 .personal__stats {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.personal__actions {
+  display: grid;
   gap: 8px;
 }
 

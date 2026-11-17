@@ -1,0 +1,21 @@
+{
+  "id": "./",
+  "name": "Pull It Together",
+  "short_name": "Pull It Together",
+  "description": "Pon a prueba tu conocimiento, trabaja en equipo y gana.",
+  "lang": "es",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#07080f",
+  "theme_color": "#07080f",
+  "categories": ["games", "entertainment"],
+  "icons": [
+    { "src": "assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "screenshots": [
+    { "src": "screenshots/pull-it-together.jpg", "sizes": "ANCHOxALTO", "type": "image/jpeg", "form_factor": "wide", "label": "Partida de Pull It Together" }
+  ]
+}

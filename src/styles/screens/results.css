@@ -34,12 +34,12 @@
 .results__winner--b { color: var(--team-b); text-shadow: 0 4px 0 var(--team-b-deep), 0 0 60px rgba(255, 138, 174, 0.35); }
 .results__winner--tie { color: var(--gold); text-shadow: 0 4px 0 var(--gold-deep); }
 
-.results__sub {
-  color: var(--text-dim);
+.results__verdict {
   font-family: var(--font-ui);
-  font-size: clamp(0.62rem, 1vw, 0.82rem);
-  letter-spacing: 0.1em;
+  font-size: clamp(0.66rem, 1.2vw, 0.8rem);
+  letter-spacing: 0.24em;
   text-transform: uppercase;
+  color: var(--text);
 }
 
 .results__boards {
@@ -169,7 +169,20 @@
 .results__actions {
   display: flex;
   flex-wrap: wrap;
+  align-content: center;
   justify-content: center;
   gap: 10px;
 }
 
+.results__sound {
+  flex: 0 0 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.results__sound .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}

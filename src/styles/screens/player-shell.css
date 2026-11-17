@@ -98,6 +98,28 @@
   box-shadow: 0 0 10px var(--danger);
 }
 
+.play__leave {
+  flex: 0 0 auto;
+  min-height: 28px;
+  padding: 4px 8px;
+  border-color: rgba(255, 92, 106, 0.55);
+  background: rgba(255, 92, 106, 0.1);
+  color: var(--danger);
+  font-size: 0.6rem;
+}
+
+.play__leave:hover {
+  border-color: var(--danger);
+  background: rgba(255, 92, 106, 0.2);
+}
+
+.play__sound {
+  flex: 0 0 auto;
+  min-height: 28px;
+  padding: 4px 8px;
+  font-size: 0.66rem;
+}
+
 .play__main {
   position: relative;
   display: flex;

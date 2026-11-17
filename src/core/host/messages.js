@@ -88,7 +88,11 @@ export function handleJoin(host, msg) {
     host.reply(id, 'La sala está llena.');
     return;
   }
-  const team = available[Math.floor(Math.random() * available.length)];
+  let team;
+  if (available.length === 1) team = available[0];
+  else if (countA < countB) team = 'A';
+  else if (countB < countA) team = 'B';
+  else team = Math.random() < 0.5 ? 'A' : 'B';
 
   player = createPlayer({ id, nickname, team, avatar: msg.avatar });
   host.state.players.push(player);

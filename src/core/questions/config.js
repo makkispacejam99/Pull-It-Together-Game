@@ -12,6 +12,9 @@ export const DIFFICULTY_LABEL = Object.fromEntries(DIFFICULTIES.map((d) => [d.id
 
 export const OPTION_KEYS = ['A', 'B', 'C', 'D'];
 
+export const MIN_ROUNDS = 4;
+export const MAX_ROUNDS = 30;
+
 export const LIMITS = {
   textMin: 5,
   textMax: 180,

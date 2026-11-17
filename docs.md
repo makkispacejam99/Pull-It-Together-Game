@@ -84,10 +84,11 @@ al salir.
   de localStorage, portapapeles y descargas. Casi todos los módulos dependen de él.
 - audio.js: música y efectos. Guarda si el sonido está silenciado, reproduce efectos por
   nombre (select, correct, wrong, pull, win, tick) y desbloquea el audio con el primer
-  gesto del usuario, como exigen los navegadores. La música de fondo tiene tres
-  operaciones: startMusic la inicia (o la sube de nuevo con fade si ya sonaba),
-  duckMusic baja el volumen con fade sin detenerla, y stopMusic la detiene, con fade
-  opcional.
+  gesto del usuario, como exigen los navegadores. El tic del reloj alterna dos muestras y
+  sube el tono al acercarse el final; los aciertos y fallos seguidos también ganan tono
+  para reforzar la racha. La música de fondo tiene tres operaciones: startMusic la inicia
+  (o la sube de nuevo con fade si ya sonaba), duckMusic baja el volumen con fade sin
+  detenerla, y stopMusic la detiene, con fade opcional.
 - rules.js: el corazón matemático del juego. Define la puntuación, calcula la opción
   mayoritaria del equipo (con desempate por velocidad), arma los puntos individuales,
   aplica los bonus por racha y por aciertos, convierte la diferencia de puntos en
@@ -97,6 +98,9 @@ al salir.
   envía el join, escucha los estados que manda el anfitrión, corrige el reloj con el
   desfase del servidor, vota, hace ping cada 15 segundos, detecta desconexiones,
   reintenta el join si el jugador desaparece del estado y avisa si lo expulsan.
+- wakelock.js: mantiene la pantalla encendida mientras el anfitrión o el jugador están
+  en el lobby, en partida o en los resultados. Pide un Screen Wake Lock, lo vuelve a
+  tomar al recuperar la pestaña y lo libera al salir a otra pantalla.
 - host.js: archivo que solo re-exporta las piezas del host (HostRoom, createState y las
   constantes) para que las importaciones antiguas sigan funcionando.
 
@@ -122,7 +126,8 @@ al salir.
   arranca el reloj interno (cada 250 ms) y controla las fases: lobby, cuenta atrás,
   pregunta, revelado y resultados. También maneja la configuración, los equipos, los
   bots, los votos, el knockout, la revancha, la publicación del estado y la limpieza al
-  cerrar.
+  cerrar. Los bots se mantienen en la sala al volver al lobby y al dar revancha, y se
+  conservan sus equipos para que la siguiente partida empiece con la misma formación.
 
 ------------------------------------------
 6. Banco de preguntas (src/core/questions)
@@ -134,14 +139,15 @@ reúne las exportaciones que usan la interfaz y el host. El
 trabajo real está repartido en estos archivos:
 
 - config.js: claves de localStorage, lista de dificultades con sus etiquetas, letras de
-  las opciones y límites de validación.
+  las opciones, límites de validación y el rango de rondas permitido (de 4 a 30).
 - bank.js: carga el banco desde localStorage o lo siembra desde los datos iniciales;
   guarda, restaura y cuenta. También obtiene las categorías únicas, la dificultad de
   cada pregunta, la búsqueda y las estadísticas del panel.
 - queue.js: arma la cola de preguntas de la partida: filtra por categoría y dificultad,
   quita duplicados y preguntas inválidas, y prioriza las que el jugador no ha visto.
-  También recorta la pregunta antes de enviarla a los jugadores, para que no incluya la
-  respuesta correcta.
+  poolFor expone ese filtro y maxRoundsFor devuelve cuántas rondas permite el banco con
+  la configuración actual, para que el lobby avise antes de empezar. También recorta la
+  pregunta antes de enviarla a los jugadores, para que no incluya la respuesta correcta.
 - validation.js: valida una pregunta del editor: longitudes, mínimo y máximo de
   opciones, opciones vacías o repetidas, respuesta correcta válida y texto duplicado.
 - import-export.js: convierte el formato Markdown de la plantilla en preguntas y genera
@@ -177,8 +183,10 @@ fábrica, se edita el archivo de su categoría.
 - bus.js: la capa de transporte y de salas. Incluye el canal en tiempo real (con cola de
   mensajes, espera de conexión, reintentos y cierre seguro), los snapshots de la sala
   (guardados en local y en la tabla rooms, con un máximo de una escritura cada 2.5
-  segundos), la identidad del jugador por sala y la presencia del host. Lo usan
-  HostRoom, PlayerClient, la pantalla de unirse y el inicio.
+  segundos), la identidad del jugador por sala y la presencia del host. Además, sweepRooms
+  borra de Supabase las salas con más de dos semanas, como mucho una vez al día y en
+  segundo plano al abrir el juego. Lo usan HostRoom, PlayerClient, la pantalla de unirse,
+  el inicio y el enrutador.
 
 ----------------------------
 9. Escenario (src/game)
@@ -221,10 +229,12 @@ estado y solo lo dibuja. Se usa en el inicio, en el lobby y en la partida.
 # INICIO (HOME.JS)
 Dibuja el hero con título, texto y botones, las tres tarjetas de cómo se juega y el pie
 de página con créditos. La barra superior tiene el botón Donar (con un corazón animado
-que lleva a Ko-fi), el acceso al banco de preguntas y el botón de sonido. En el pie hay
-un enlace que abre el formulario de reportes y sugerencias. Usa la escena de
+que lleva a Ko-fi), el acceso al banco de preguntas y el botón de sonido. En pantallas
+muy estrechas el acceso a preguntas y el sonido se recogen en un menú desplegable junto
+al corazón, que sigue siempre visible con el estado del sonido dentro del menú. En el
+pie hay un enlace que abre el formulario de reportes y sugerencias. Usa la escena de
 demostración como fondo, crea el código de sala al pulsar Crear sala y, al salir,
-destruye la escena.
+destruye la escena y quita los escuchadores del menú.
 
 # UNIRSE (JOIN.JS)
 Formulario con código de sala, apodo, avatar y equipo, con validación y recordatorio del
@@ -235,19 +245,29 @@ pantalla del jugador.
 play.js solo re-exporta; la lógica está en play/index.js.
 
 - play/index.js: arma la cabecera del jugador (equipo, apodo, contador de racha personal
-  con una llama y punto de conexión), crea el PlayerClient, maneja el estado, la
-  conexión, los errores y la expulsión, y decide qué subpantalla mostrar según la fase.
-  También controla el temporizador y la limpieza.
+  con una llama, botón de sonido, punto de conexión y botón Salir), crea el PlayerClient,
+  maneja el estado, la conexión, los errores y la expulsión, y decide qué subpantalla
+  mostrar según la fase. También arranca la música de fondo igual que el anfitrión (sube en
+  cuenta atrás, pregunta y reveal, baja en resultados y se detiene en el lobby), reintenta
+  la reproducción tras el primer toque si el navegador la bloqueó, controla el
+  temporizador, el modal de confirmación para abandonar la sala y la limpieza.
 - play/wait.js: sala de espera del jugador y cuenta atrás de inicio.
 - play/question.js: la pregunta con su temporizador, barra, categoría y botones de
   respuesta. Permite cambiar el voto y muestra cuántos han votado.
-- play/reveal.js: el resultado personal: si acertó o falló, en cuánto tiempo, cuántos
-  puntos ganó, qué eligió el equipo y cuál era la respuesta correcta.
+- play/reveal.js: el resultado de la ronda en dos niveles. Arriba, la tarjeta personal
+  indica si acertaste, qué marcaste y los puntos. Debajo, una tarjeta del equipo dice si
+  la mayoría acertó o falló, cuántos votaron por la opción ganadora, cuál era la correcta
+  y una frase que aclara la diferencia entre tu voto y el del equipo (por ejemplo, si tú
+  acertaste pero la mayoría no, o al revés).
 - play/feedback.js: el aviso flotante que aparece sobre la tarjeta del reveal con un
   mensaje según la racha personal: Genial, Excelente, Fantástico e Imparable, con el
   número de la racha desde dos aciertos. Si el jugador pierde una racha de dos o más,
   avisa con Racha perdida. Si falla o no vota, muestra un mensaje de ánimo.
-- play/results.js: resumen final con el ranking del equipo, aciertos, puntos y racha.
+- play/results.js: resumen final encabezado por el ganador real de la partida: etiqueta
+  Los ganadores son en blanco y nombre grande del equipo, sin motivo extra. Debajo van el
+  ranking del equipo, aciertos, puntos y racha. Desde aquí el jugador puede volver a la
+  sala de
+  espera del lobby o abandonar la sala, con un modal de confirmación.
 
 # ANFITRIÓN (STAGE.JS Y CARPETA STAGE/)
 stage.js solo re-exporta; la lógica está en stage/index.js.
@@ -257,14 +277,17 @@ stage.js solo re-exporta; la lógica está en stage/index.js.
   bajando poco a poco desde el último reveal, en volumen bajo en resultados, y
   apagándose con fade solo al volver al lobby o salir. Devuelve la limpieza completa.
 - stage/lobby.js: el lobby: código e invitación, equipos y jugadores (mover o quitar),
-  nombres de equipo, configuración de rondas, tiempo, dificultad y categorías, bots y el
-  botón de empezar.
+  nombres de equipo, configuración de rondas (botones hasta 12 y campo personalizado de
+  4 a 30, con aviso si el banco no alcanza), tiempo, dificultad y categorías, cantidad
+  manual de bots equilibrados por equipo y el botón de empezar.
 - stage/game.js: el HUD de la partida: ronda, marcadores, reloj, barra de fuerza,
   escena, cuenta atrás, panel de la pregunta con sus opciones, panel de revelado, saltos
   y aviso de KO. En el reveal muestra además el aviso de racha de cada equipo debajo del
   medidor de fuerza.
-- stage/results.js: pantalla final del anfitrión: ganador, marcadores, rankings con MVP,
-  confeti y las acciones de revancha, volver al lobby o nueva sala.
+- stage/results.js: pantalla final del anfitrión: etiqueta Los ganadores son en blanco,
+  nombre del equipo en grande, la ronda o el knockout debajo, rankings con MVP, confeti,
+  las acciones de revancha, volver al lobby o nueva sala y, debajo de ellas, el botón para
+  silenciar o activar el audio. Los puntos de cada equipo se leen en sus propias tablas.
 - stage/shared.js: utilidades de la pantalla del anfitrión: pantalla completa y confeti.
 
 # ADMIN (ADMIN.JS Y CARPETA ADMIN/)
@@ -301,10 +324,11 @@ pantallas, y al final responsive.css para que sus reglas ganen cuando haga falta
 # PANTALLAS (SRC/STYLES/SCREENS)
 
 - topbar.css: barra superior de marca y navegación.
-- home.css: hero del inicio, escena, tarjetas, pie de página, botón Donar y enlace de
-  reportes.
+- home.css: hero del inicio, escena, tarjetas, pie de página, botón Donar, menú
+  desplegable de móviles estrechos y enlace de reportes.
 - arena-background.css: cielo, nebulosas, estrellas, planeta, luna, satélite, rocas,
-  cordilleras, cristales, suelo y el emblema VS.
+  cordilleras, cristales, suelo y el emblema VS, que escala con el ancho para no quedar
+  diminuto en móviles.
 - arena-characters.css: personajes, animaciones de caminar y tirar, espejo del equipo
   rival y ventaja de equipo.
 - arena-rope.css: la cuerda de dos colores, el pin central y los divisores.
@@ -353,13 +377,18 @@ Hay dos tipos de racha, y cada una se muestra en su lugar.
 - stage/index.js crea el HostRoom, que publica el estado en Supabase y en localStorage.
 - Los jugadores entran por #/room/CODIGO (join.js), guardan su identidad y pasan a
   #/play/CODIGO.
-- PlayerClient envía el join; el host lo valida y responde con el estado.
+- PlayerClient envía el join; el host lo valida, lo coloca en el equipo con menos
+  jugadores (o al azar si están empatados) y responde con el estado.
 - Al empezar, el host arma la cola con buildQueue, va alternando las fases y recibe los
   votos.
 - En el reveal, rules.js calcula los puntos y la cuerda, y tanto la pantalla del
   anfitrión como los móviles actualizan su interfaz y la escena.
 - Al terminar se muestran los resultados y se ofrece revancha o volver al lobby. La
-  música sigue sonando bajita hasta que se elige una de esas opciones.
+  música sigue sonando bajita hasta que se elige una de esas opciones. En el móvil, el
+  jugador puede volver a la sala de espera o abandonar la sala confirmándolo en un modal.
+  Un jugador que se quedó en esa sala de espera vuelve solo a la partida cuando el
+  anfitrión da revancha, sin recargar. Los bots tampoco se pierden: siguen en la sala y
+  participan en la revancha con el mismo equipo.
 
 # EDITAR EL BANCO DE PREGUNTAS
 
@@ -386,6 +415,7 @@ Todo esto vive en localStorage, así que cada navegador tiene sus propios datos.
 - tyg:room:CODIGO: último estado de la sala.
 - tyg:me:CODIGO: identidad del jugador en esa sala.
 - tyg:host:CODIGO y tyg:hostdata:CODIGO: latido y datos privados del anfitrión.
+- tyg.rooms.cleanup: última vez que se limpiaron las salas viejas de Supabase.
 - tyg.muted y tyg.nickname: preferencias del usuario.
 - pit:last-report: hora del último reporte enviado.
 
