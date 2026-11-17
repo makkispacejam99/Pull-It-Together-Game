@@ -1,4 +1,4 @@
-export { DIFFICULTIES, DIFFICULTY_LABEL, OPTION_KEYS } from './questions/config.js';
+export { DIFFICULTIES, DIFFICULTY_LABEL, OPTION_KEYS, MIN_ROUNDS, MAX_ROUNDS } from './questions/config.js';
 export {
   loadBank,
   saveBank,
@@ -9,6 +9,6 @@ export {
   searchBank,
   bankStats,
 } from './questions/bank.js';
-export { buildQueue, toPublic } from './questions/queue.js';
+export { buildQueue, poolFor, maxRoundsFor, toPublic } from './questions/queue.js';
 export { validateQuestion } from './questions/validation.js';
 export { parseImport, buildTemplate } from './questions/import-export.js';

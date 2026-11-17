@@ -1,4 +1,4 @@
-import { play } from '../../../core/audio.js';
+import { isMuted, play, toggleMuted } from '../../../core/audio.js';
 import { rankPlayers } from '../../../core/rules.js';
 import { avatarSrc, esc } from '../../../core/utils.js';
 import { confetti } from './shared.js';
@@ -20,19 +20,11 @@ export function createResultsView(ctx) {
 
     resultsNode.innerHTML = `
       <div class="results__head">
-        <p class="eyebrow">${state.ko ? 'Knockout' : `Después de ${state.round} rondas`}</p>
+        <p class="results__verdict">${winner ? 'Los ganadores son' : 'Empate'}</p>
         <h1 class="results__winner results__winner--${
           winner === 'A' ? 'a' : winner === 'B' ? 'b' : 'tie'
         }">${winner ? esc(winnerName) : 'Empate'}</h1>
-        <p class="results__sub">
-          ${
-            state.ko
-              ? 'La cuerda cruzó el límite: victoria por knockout'
-              : winner
-                ? `Cuerda a favor por ${Math.abs(state.rope)} puntos`
-                : 'Misma cuerda, mismos aciertos'
-          }
-        </p>
+        <p class="eyebrow">${state.ko ? 'Knockout' : `Después de ${state.round} rondas`}</p>
       </div>
 
       <div class="results__boards">
@@ -44,8 +36,22 @@ export function createResultsView(ctx) {
         <button class="btn btn--primary btn--lg" data-rematch>Revancha</button>
         <button class="btn btn--lg" data-lobby>Volver al lobby</button>
         <a class="btn btn--ghost btn--lg" href="#/">Nueva sala</a>
+        <div class="results__sound">
+          <button class="btn btn--ghost btn--sm" type="button" data-sound aria-pressed="${!isMuted()}">
+            <span data-sound-icon>${isMuted() ? '♪̸' : '♪'}</span>
+            <span data-sound-label>${isMuted() ? 'Activar audio' : 'Silenciar audio'}</span>
+          </button>
+        </div>
       </div>
     `;
+
+    resultsNode.querySelector('[data-sound]')?.addEventListener('click', (event) => {
+      const btn = event.currentTarget;
+      const muted = toggleMuted();
+      btn.setAttribute('aria-pressed', String(!muted));
+      btn.querySelector('[data-sound-icon]').textContent = muted ? '♪̸' : '♪';
+      btn.querySelector('[data-sound-label]').textContent = muted ? 'Activar sonido' : 'Silenciar sonido';
+    });
 
     resultsNode.querySelector('[data-rematch]')?.addEventListener('click', () => {
       hide();

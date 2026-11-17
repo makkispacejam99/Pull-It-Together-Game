@@ -9,42 +9,62 @@ export function buildReveal(ctx, state) {
   const result = state.lastResult;
   if (!result) return;
   const detail = result.individuals?.[me.id];
-  const correctIndex = result.correctIndex;
+  const voted = Boolean(detail);
   const correct = Boolean(detail?.correct);
+  const correctIndex = result.correctIndex;
   const myTeam = result.teams[myPlayer.team];
-  const otherTeam = result.teams[myPlayer.team === 'A' ? 'B' : 'A'];
+  const teamOk = Boolean(myTeam.correct);
+  const teamVoted = myTeam.votes > 0;
   const teamName = state.teams[myPlayer.team].name;
+  const teamSide = myPlayer.team === 'A' ? 'a' : 'b';
+  const roster = state.players.filter(
+    (p) => p.team === myPlayer.team && state.roundPlayers.includes(p.id)
+  );
+  const correctOption = state.question?.options?.[correctIndex] || '';
 
   play(correct ? 'correct' : 'wrong');
 
+  const title = !voted ? 'No votaste' : correct ? 'Acertaste' : 'Fallaste';
+  const sub = !voted
+    ? 'Se acabó el tiempo de esta ronda.'
+    : `Genial respondiste en ${fmtMs(detail.ms)}`;
+
+  const teamLine = !teamVoted
+    ? 'Nadie del equipo votó esta ronda.'
+    : `La mayoría eligió la opción "${LETTERS[myTeam.choice]}". <br> <i class="team-verdict__votes">${myTeam.count} de ${roster.length} votaron.</i>`;
+
+  const teamNote = !teamOk && teamVoted
+    ? `La respuesta correcta era ${LETTERS[correctIndex]}: ${esc(correctOption)}`
+    : myTeam.tied
+      ? 'El equipo se dividió y desempató el voto más rápido.'
+      : '';
+
+  let diff = '';
+  if (voted && correct && !teamOk) diff = 'Tú la tenías, pero la mayoría del equipo eligió otra.';
+  else if (voted && !correct && teamOk) diff = 'El equipo acertó, pero tu voto no era la correcta.';
+  else if (!voted && teamOk) diff = 'El equipo acertó incluso sin tu voto.';
+  else if (voted && correct && teamOk) diff = 'Tú y tu equipo acertaron.';
+  else if (voted && !correct && !teamOk) diff = 'Tú y tu equipo fallaron esta ronda.';
+  else if (!voted && !teamOk) diff = 'El equipo falló y tú no votaste.';
+
   main.innerHTML = `
       <div class="reveal-card">
-        <div class="reveal-card__result ${correct ? 'is-ok' : 'is-bad'}">
-          <p class="reveal-card__title">${correct ? '¡Correcto!' : 'Incorrecto'}</p>
-          <p class="reveal-card__sub">
-            ${
-              detail
-                ? correct
-                  ? `Respondiste en ${fmtMs(detail.ms)}`
-                  : `La respuesta correcta era ${LETTERS[correctIndex]}.`
-                : 'No alcanzaste a votar en esta ronda.'
-            }
-          </p>
+        <div class="reveal-card__result ${voted ? (correct ? 'is-ok' : 'is-bad') : 'is-out'}">
+          <p class="reveal-card__title">${title}</p>
+          <p class="reveal-card__sub">${sub}</p>
           <p class="reveal-card__points">+${detail?.points || 0} pts</p>
         </div>
 
-        <div class="panel panel--flat" style="padding:12px">
-          <p class="eyebrow" style="margin-bottom:6px">${esc(teamName)}</p>
-          <p class="muted" style="font-size:0.92rem">
-            ${
-              myTeam.correct
-                ? `El equipo eligió la opcion: <b style="color:var(--team-a)"> ${LETTERS[myTeam.choice]}</b>, Enhorabuena <b style="color:var(--team-a)">Acertaron</b>.`
-                : `El equipo eligió ${
-                    myTeam.choice >= 0 ? `la opción: <b style="color:var(--team-b)"> ${LETTERS[myTeam.choice]}</b>. ` : '—'
-                  }  Ups, <b style="color:var(--team-b)">no acertaron esta vez.</b>`
-            }
-            ${otherTeam.correct ? ' El rival también acertó.' : ''}
-          </p>
+        <div class="team-verdict team-verdict--${
+          teamOk ? 'ok' : teamVoted ? 'bad' : 'flat'
+        }">
+          <div class="team-verdict__top">
+            <span class="team-verdict__team team-verdict__team--${teamSide}">${esc(teamName)}</span>
+            <span class="team-verdict__tag">${teamOk ? 'Acertó' : teamVoted ? 'Falló' : 'Sin votos'}</span>
+          </div>
+          <p class="team-verdict__line">${teamLine}</p>
+          ${teamNote ? `<p class="team-verdict__note">${teamNote}</p>` : ''}
+          ${diff ? `<p class="team-verdict__diff">${diff}</p>` : ''}
         </div>
 
         <div class="reveal-options">
@@ -64,9 +84,9 @@ export function buildReveal(ctx, state) {
         <p class="tiny muted center">Siguiente ronda en <span data-next>7</span>s</p>
       </div>`;
 
-      showFeedback(main, {
+  showFeedback(main, {
     correct,
-    voted: Boolean(detail),
+    voted,
     streak: myPlayer.streak || 0,
     round: state.round,
     ms: detail?.ms || 0,

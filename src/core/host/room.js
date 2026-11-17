@@ -1,5 +1,5 @@
 import { Channel, loadSnapshot, saveSnapshot, touchHost } from '../../net/bus.js';
-import { buildQueue, loadBank, toPublic } from '../questions.js';
+import { buildQueue, loadBank, maxRoundsFor, MIN_ROUNDS, toPublic } from '../questions.js';
 import {
   applyBonuses,
   individualPoints,
@@ -138,7 +138,12 @@ export class HostRoom {
   configure(patch) {
     if (this.state.status !== 'lobby') return;
     this.state.config = { ...this.state.config, ...patch };
-    if (patch.rounds) this.state.totalRounds = clamp(Number(patch.rounds), 1, 20);
+    if (patch.duration) this.state.config.duration = clamp(Number(patch.duration), 12, 60);
+    if (patch.rounds) {
+      const max = Math.max(MIN_ROUNDS, maxRoundsFor(loadBank(), this.state.config));
+      this.state.totalRounds = clamp(Number(patch.rounds), MIN_ROUNDS, max);
+      this.state.config.rounds = this.state.totalRounds;
+    }
     this.publish();
   }
 
@@ -359,7 +364,6 @@ export class HostRoom {
       p.bestStreak = 0;
       p.voted = false;
     }
-    this.clearBots();
     this.stopBots();
     this.saveHostData();
     this.publish();
@@ -392,12 +396,22 @@ export class HostRoom {
     this.publish();
   }
 
-  addBots(perTeam = 4) {
-    for (const team of ['A', 'B']) {
-      const current = this.state.players.filter((p) => p.team === team).length;
-      const missing = Math.max(0, perTeam - current);
-      for (let i = 0; i < missing; i++) this.addBot(team);
+  addBots(count = 4) {
+    if (this.state.status !== 'lobby') return 0;
+    const slots = Math.max(0, MAX_PLAYERS - this.state.players.length);
+    const total = Math.min(Math.max(0, Math.floor(Number(count) || 0)), slots);
+
+    for (let i = 0; i < total; i++) {
+      const a = this.state.players.filter((p) => p.team === 'A').length;
+      const b = this.state.players.filter((p) => p.team === 'B').length;
+      let team;
+      if (a < b) team = 'A';
+      else if (b < a) team = 'B';
+      else team = Math.random() < 0.5 ? 'A' : 'B';
+      this.addBot(team);
     }
+
+    return total;
   }
 
   stopBots() {

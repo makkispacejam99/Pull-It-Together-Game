@@ -17,8 +17,9 @@
 }
 
 @media (max-width: 1080px) {  .lobby {
-    grid-template-columns: minmax(220px, 0.9fr) minmax(0, 1.2fr);
+    grid-template-columns: minmax(200px, 0.9fr) minmax(320px, 380px);
     grid-template-rows: auto 1fr;
+    column-gap: clamp(12px, 1.8vw, 26px);
   }
   .lobby__invite { grid-row: 1; }
   .lobby__config { grid-row: 1 / span 2; grid-column: 2; }
@@ -261,14 +262,8 @@
 }
 
 @media (max-width: 768px) {
-  .arena__vs {
-    scale: 0.6;
-  }
-
   .arena__vs-badge {
-    padding: 4px 8px 3px;
-    border-width: 1.5px;
-    font-size: 0.62rem; 
+    padding: 6px 11px 5px;
   }
 }
 

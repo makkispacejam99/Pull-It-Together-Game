@@ -5,6 +5,8 @@ import { renderJoin } from './ui/screens/join.js';
 import { renderPlay } from './ui/screens/play.js';
 import { renderStage } from './ui/screens/stage.js';
 import { renderAdmin } from './ui/screens/admin.js';
+import { holdScreenAwake, releaseScreenAwake } from './core/wakelock.js';
+import { sweepRooms } from './net/bus.js';
 
 const app = document.getElementById('app');
 const TITLES = {
@@ -56,6 +58,9 @@ function render() {
   const result = route.screen(app, route.params);
   cleanup = typeof result === 'function' ? result : null;
 
+  if (route.key === 'stage' || route.key === 'play') holdScreenAwake();
+  else releaseScreenAwake();
+
   window.scrollTo(0, 0);
   return true;
 }
@@ -67,3 +72,5 @@ if (!location.hash) {
 }
 
 render();
+
+sweepRooms().catch(() => {});

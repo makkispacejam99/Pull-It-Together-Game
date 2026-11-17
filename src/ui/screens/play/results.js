@@ -10,6 +10,8 @@ export function buildResults(ctx, state) {
   const winner = state.winner;
   const weWon = winner === team;
   const tie = !winner;
+  const winnerName = winner ? state.teams[winner].name : 'Empate';
+  const winnerSide = winner === 'A' ? 'a' : winner === 'B' ? 'b' : 'tie';
 
   play(weWon ? 'win' : 'wrong');
 
@@ -17,10 +19,11 @@ export function buildResults(ctx, state) {
       <div class="personal">
         <div class="personal__hero">
           <img class="personal__avatar" src="${avatarSrc(myPlayer.avatar, 'idle')}" alt="">
-          <p class="eyebrow">${tie ? 'Empate' : weWon ? '¡Ganaron!' : 'Casi lo logran'}</p>
-          <h2 class="display" style="font-size:1.4rem;color:var(--${
-            weWon ? 'gold' : 'text'
-          })">${esc(state.teams[team].name)}</h2>
+          <div class="personal__verdict personal__verdict--${winnerSide}">
+            <p class="personal__verdict-label">${tie ? 'Empate' : 'Los ganadores son'}</p>
+            <h2 class="personal__winner personal__winner--${winnerSide}">${esc(winnerName)}</h2>
+          </div>
+
           <p class="personal__rank">#${rank} en tu equipo</p>
         </div>
 
@@ -48,6 +51,12 @@ export function buildResults(ctx, state) {
           Si el anfitrión da revancha, quédate aquí y espera a que la partida comience.
         </p>
 
-        <a class="btn btn--primary btn--block" href="#/">Volver al inicio</a>
+        <div class="personal__actions">
+          <button type="button" class="btn btn--primary btn--block" data-lobby>Volver al lobby</button>
+          <button type="button" class="btn btn--ghost btn--block" data-leave>Abandonar sala</button>
+        </div>
       </div>`;
+
+  main.querySelector('[data-lobby]')?.addEventListener('click', () => ctx.returnToLobby());
+  main.querySelector('[data-leave]')?.addEventListener('click', () => ctx.confirmLeave());
 }

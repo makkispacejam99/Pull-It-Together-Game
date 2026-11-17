@@ -1,5 +1,5 @@
 import { MAX_PLAYERS } from '../../../core/host.js';
-import { DIFFICULTIES } from '../../../core/questions.js';
+import { DIFFICULTIES, MAX_ROUNDS, MIN_ROUNDS, loadBank, maxRoundsFor } from '../../../core/questions.js';
 import { isMuted, toggleMuted } from '../../../core/audio.js';
 import { avatarSrc, copyText, esc } from '../../../core/utils.js';
 import { createScene } from '../../../game/scene.js';
@@ -7,10 +7,28 @@ import { toast } from '../../toast.js';
 import { toggleFullscreen } from './shared.js';
 
 const ROUND_OPTIONS = [4, 6, 8, 10, 12];
-const TIME_OPTIONS = [30, 45, 60, 90];
+const TIME_OPTIONS = [12, 28, 44, 60];
+const BOT_DEFAULT = 4;
+const ROUNDS_WARNING =
+  '¡Ups! Con las preguntas actuales no alcanza para tantas rondas. Prueba con menos o suma más preguntas.';
 
 export function createLobbyView(ctx) {
   const { root, host, code, categories } = ctx;
+  const bank = loadBank();
+
+  function availableRounds(state) {
+    return Math.min(MAX_ROUNDS, maxRoundsFor(bank, state.config));
+  }
+
+  function syncApply() {
+    const input = root.querySelector('[data-rounds-input]');
+    const button = root.querySelector('[data-rounds-apply]');
+    if (!input || !button) return;
+    const value = Math.floor(Number(input.value));
+    const applied = Number.isFinite(value) && value === host.state.config.rounds;
+    button.textContent = applied ? 'Aplicado' : 'Aplicar';
+    button.classList.toggle('is-applied', applied);
+  }
 
   function build(state) {
     const inviteUrl = `${location.origin}${location.pathname}#/room/${code}`;
@@ -62,6 +80,12 @@ export function createLobbyView(ctx) {
                     }">${n}</button>`
                 ).join('')}
               </div>
+              <div class="lobby__custom">
+                <input class="input" type="number" inputmode="numeric" min="${MIN_ROUNDS}" max="${MAX_ROUNDS}"
+                  step="1" value="${state.config.rounds}" data-rounds-input aria-label="Rondas personalizadas">
+                <button type="button" class="btn btn--ghost btn--sm" data-rounds-apply>Aplicar</button>
+              </div>
+              <p class="tiny lobby__note" data-rounds-note></p>
             </div>
 
             <div class="config-group">
@@ -107,7 +131,11 @@ export function createLobbyView(ctx) {
 
             <div class="lobby__start">
               <button class="btn btn--primary btn--lg btn--block" data-start>Empezar partida</button>
-              <button class="btn btn--ghost btn--sm btn--block" data-bots>Completar con bots</button>
+              <div class="lobby__bots">
+                <input class="input" type="number" inputmode="numeric" min="1" step="1" value="${BOT_DEFAULT}"
+                  data-bots-input aria-label="Cantidad de bots">
+                <button class="btn btn--ghost btn--sm" data-bots>Añadir bots</button>
+              </div>
               <p class="lobby__hint" data-hint></p>
             </div>
           </section>
@@ -162,17 +190,71 @@ export function createLobbyView(ctx) {
       window.open(`${location.pathname}#/room/${code}`, '_blank', 'noopener');
     });
 
-    root.querySelector('[data-start]').addEventListener('click', () => host.startGame());
+    const applyRounds = (value) => {
+      const state = host.state;
+      const available = availableRounds(state);
+      const rounds = Math.floor(Number(value));
+      if (!Number.isFinite(rounds) || rounds < MIN_ROUNDS) {
+        toast(`Elige al menos ${MIN_ROUNDS} rondas.`, 'bad');
+        return false;
+      }
+      if (rounds > available) {
+        toast(ROUNDS_WARNING, 'bad', 3600);
+        return false;
+      }
+      host.configure({ rounds });
+      syncApply();
+      return true;
+    };
+
+    root.querySelector('[data-start]').addEventListener('click', () => {
+      if (host.state.config.rounds > availableRounds(host.state)) {
+        toast(ROUNDS_WARNING, 'bad', 3600);
+        return;
+      }
+      host.startGame();
+    });
+
+    root.querySelector('[data-rounds-apply]').addEventListener('click', () => {
+      applyRounds(root.querySelector('[data-rounds-input]').value);
+    });
+
+    root.querySelector('[data-rounds-input]').addEventListener('input', syncApply);
+
+    root.querySelector('[data-rounds-input]').addEventListener('keydown', (event) => {
+      if (event.key !== 'Enter') return;
+      event.preventDefault();
+      applyRounds(event.currentTarget.value);
+    });
 
     root.querySelector('[data-bots]').addEventListener('click', () => {
-      host.addBots(4);
-      toast('¡La CPU entra a la partida!', 'ok');
+      const input = root.querySelector('[data-bots-input]');
+      const wanted = Math.floor(Number(input.value));
+      const slots = MAX_PLAYERS - host.state.players.length;
+      if (!Number.isFinite(wanted) || wanted < 1) {
+        toast('Elige cuántos bots quieres añadir.', 'bad');
+        return;
+      }
+      if (slots <= 0) {
+        toast('La sala ya está llena (30/30).', 'bad');
+        return;
+      }
+      const added = host.addBots(Math.min(wanted, slots));
+      if (!added) return;
+      input.value = String(BOT_DEFAULT);
+      if (wanted > slots) toast(`Solo cabían ${added} bots. La sala llegó a 30.`, 'ok', 3200);
+      else toast(added === 1 ? '¡Entró 1 bot!' : `¡Entraron ${added} bots!`, 'ok');
     });
 
     root.querySelector('[data-seg="rounds"]').addEventListener('click', (event) => {
       const button = event.target.closest('[data-value]');
       if (!button) return;
-      host.configure({ rounds: Number(button.dataset.value) });
+      const value = Number(button.dataset.value);
+      if (button.classList.contains('is-disabled') || value > availableRounds(host.state)) {
+        toast(ROUNDS_WARNING, 'bad', 3600);
+        return;
+      }
+      host.configure({ rounds: value });
     });
 
     root.querySelector('[data-seg="duration"]').addEventListener('click', (event) => {
@@ -264,9 +346,34 @@ export function createLobbyView(ctx) {
         button.classList.toggle('is-on', button.dataset.value === String(value));
       });
     };
-    syncSeg('rounds', state.config.rounds);
     syncSeg('duration', state.config.duration);
     syncSeg('difficulty', state.config.difficulty);
+
+    const available = availableRounds(state);
+    root.querySelectorAll('[data-seg="rounds"] button').forEach((button) => {
+      const blocked = Number(button.dataset.value) > available;
+      button.classList.toggle('is-on', Number(button.dataset.value) === state.config.rounds);
+      button.classList.toggle('is-disabled', blocked);
+      button.setAttribute('aria-disabled', blocked ? 'true' : 'false');
+      button.title = blocked ? `Solo hay ${available} preguntas disponibles` : '';
+    });
+
+    const roundsInput = root.querySelector('[data-rounds-input]');
+    if (roundsInput) {
+      roundsInput.max = String(Math.max(MIN_ROUNDS, available));
+      if (document.activeElement !== roundsInput) roundsInput.value = String(state.config.rounds);
+    }
+    syncApply();
+
+    const roundsNote = root.querySelector('[data-rounds-note]');
+    if (roundsNote) {
+      roundsNote.textContent =
+        available < MIN_ROUNDS
+          ? `Faltan preguntas para ${MIN_ROUNDS} rondas.`
+          : state.config.rounds > available
+            ? `Pides ${state.config.rounds} · máximo ${available}. Baja las rondas para empezar.`
+            : `Jugarás ${state.config.rounds} rondas · máximo ${available}`;
+    }
     root.querySelectorAll('[data-cat]').forEach((button) => {
       button.classList.toggle('is-on', state.config.categories.includes(button.dataset.cat));
     });
@@ -284,8 +391,8 @@ export function createLobbyView(ctx) {
     }
     if (startBtn) startBtn.disabled = !(a > 0 && b > 0);
 
-    const botsBtn = root.querySelector('[data-bots]');
-    if (botsBtn) botsBtn.textContent = state.players.some((p) => p.isBot) ? 'Añadir más bots' : 'Completar con bots';
+    const botsInput = root.querySelector('[data-bots-input]');
+    if (botsInput) botsInput.max = String(Math.max(1, MAX_PLAYERS - total));
 
     ctx.getScene()?.update(state);
   }

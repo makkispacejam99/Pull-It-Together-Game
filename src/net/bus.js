@@ -6,6 +6,9 @@ import { supabase } from './supabase.js';
 const snapshotKey = (code) => `tyg:room:${code}`;
 const meKey = (code) => `tyg:me:${code}`;
 const hostKey = (code) => `tyg:host:${code}`;
+const CLEANUP_KEY = 'tyg.rooms.cleanup';
+const CLEANUP_EVERY_MS = 24 * 60 * 60 * 1000;
+const ROOM_TTL_MS = 14 * 24 * 60 * 60 * 1000;
 
 export { roomCode };
 
@@ -189,4 +192,39 @@ export function touchHost(code) {
 export function hostAlive(code) {
   const stamp = readJSON(hostKey(code), 0);
   return Date.now() - Number(stamp || 0) < 8000;
+}
+
+export async function sweepRooms() {
+  const last = Number(readJSON(CLEANUP_KEY, 0)) || 0;
+  if (Date.now() - last < CLEANUP_EVERY_MS) return 0;
+
+  const cutoff = Date.now() - ROOM_TTL_MS;
+  const { data, error } = await supabase.from('rooms').select('code,state');
+  if (error || !Array.isArray(data)) {
+    if (error) console.warn('rooms cleanup:', error.message);
+    return 0;
+  }
+
+  const codes = data
+    .filter((row) => {
+      const created = Number(row?.state?.createdAt || 0);
+      return Boolean(row?.code) && created > 0 && created < cutoff;
+    })
+    .map((row) => row.code);
+
+  if (codes.length) {
+    for (let i = 0; i < codes.length; i += 100) {
+      const { error: removeError } = await supabase
+        .from('rooms')
+        .delete()
+        .in('code', codes.slice(i, i + 100));
+      if (removeError) {
+        console.warn('rooms cleanup:', removeError.message);
+        return 0;
+      }
+    }
+  }
+
+  writeJSON(CLEANUP_KEY, Date.now());
+  return codes.length;
 }
