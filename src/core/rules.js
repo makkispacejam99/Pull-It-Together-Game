@@ -9,6 +9,7 @@ export const SCORE = {
   individualBase: 100,
   individualSpeed: 50,
   ropeMax: 100,
+  awayPenalty: 25,
 };
 
 export const clamp = (n, min, max) => Math.min(max, Math.max(min, n));

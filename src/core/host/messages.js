@@ -22,6 +22,10 @@ export function handleMessage(host, msg) {
       handlePing(host, msg);
       break;
 
+    case 'away':
+      handleAway(host, msg);
+      break;
+
     case 'leave': {
       const p = host.player(msg.playerId);
       if (p) {
@@ -110,6 +114,14 @@ export function handlePing(host, msg) {
   }
 }
 
+export function handleAway(host, msg) {
+  if (host.state.status !== 'question') return;
+  const player = host.player(msg.playerId);
+  if (!player || !host.state.roundPlayers.includes(player.id)) return;
+  if (Number(msg.round) !== host.state.round) return;
+  host.away[player.id] = true;
+}
+
 export function castVote(host, msg) {
   if (host.state.status !== 'question') return;
   const player = host.player(msg.playerId);
@@ -119,7 +131,9 @@ export function castVote(host, msg) {
   if (Number(msg.round) !== host.state.round) return;
 
   const ms = clamp(Date.now() - host.state.phaseStartedAt, 0, host.durationMs);
-  host.votes[player.id] = { choice: msg.choice, ms };
+  const prev = host.votes[player.id];
+  const away = prev && prev.choice === msg.choice ? prev.away : Boolean(host.away[player.id]);
+  host.votes[player.id] = { choice: msg.choice, ms, away };
   player.voted = true;
   host.state.voteCount = Object.keys(host.votes).length;
 

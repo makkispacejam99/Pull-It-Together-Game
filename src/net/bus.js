@@ -189,6 +189,11 @@ export function touchHost(code) {
   writeJSON(hostKey(code), Date.now());
 }
 
+export function hostInThisBrowser(code) {
+  const stamp = readJSON(hostKey(code), 0);
+  return Date.now() - Number(stamp || 0) < 30000;
+}
+
 export function hostAlive(code) {
   const stamp = readJSON(hostKey(code), 0);
   return Date.now() - Number(stamp || 0) < 8000;

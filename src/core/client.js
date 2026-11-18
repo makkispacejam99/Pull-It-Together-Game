@@ -108,6 +108,10 @@ export class PlayerClient {
     });
   }
 
+  away(round) {
+    this.channel.send({ t: 'away', playerId: this.me.id, round });
+  }
+
   updateMe(patch) {
     this.me = { ...this.me, ...patch };
     saveMe(this.code, this.me);

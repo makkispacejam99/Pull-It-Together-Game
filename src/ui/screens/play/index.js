@@ -1,6 +1,6 @@
-import { clearMe, loadMe } from '../../../net/bus.js';
+import { clearMe, hostInThisBrowser, loadMe } from '../../../net/bus.js';
 import { PlayerClient } from '../../../core/client.js';
-import { duckMusic, isMuted, startMusic, stopMusic, toggleMuted } from '../../../core/audio.js';
+import { duckMusic, isMuted, resumeMusic, startMusic, stopMusic, toggleMuted } from '../../../core/audio.js';
 import { clamp, esc } from '../../../core/utils.js';
 import { toast } from '../../toast.js';
 import { openModal } from '../../modal.js';
@@ -9,6 +9,7 @@ import { buildQuestion, syncQuestion } from './question.js';
 import { buildReveal } from './reveal.js';
 import { buildResults } from './results.js';
 
+const AWAY_MS = 1500;
 const FLAME_SVG = `
   <svg class="play__flame" viewBox="0 0 8 10" shape-rendering="crispEdges" aria-hidden="true" focusable="false">
     <path fill="#ff6a1a" d="M3 0h2v1H3zM3 1h3v1H3zM2 2h4v1H2zM2 3h5v1H2zM1 4h6v2H1zM0 6h8v2H0zM1 8h6v1H1zM2 9h4v1H2z"/>
@@ -94,7 +95,7 @@ export function renderPlay(root, params = {}) {
   }
 
   function retryMusic() {
-    if (musicWanted) startMusic();
+    if (musicWanted) resumeMusic();
   }
 
   const client = new PlayerClient(code, me, {
@@ -164,10 +165,26 @@ export function renderPlay(root, params = {}) {
   soundBtn.addEventListener('click', () => {
     const muted = toggleMuted();
     syncSound();
-    if (!muted && musicWanted) startMusic();
+    if (!muted && musicWanted) resumeMusic();;
     toast(muted ? 'Sonido silenciado' : 'Sonido activado');
   });
   root.addEventListener('pointerdown', retryMusic);
+
+    let hiddenAt = 0;
+
+  function onVisibility() {
+    if (document.hidden) {
+      hiddenAt = currentState?.status === 'question' ? Date.now() : 0;
+      return;
+    }
+    const wasAway = hiddenAt && Date.now() - hiddenAt >= AWAY_MS;
+    hiddenAt = 0;
+    if (!wasAway || currentState?.status !== 'question') return;
+    if (hostInThisBrowser(code)) return;
+    client.away(currentState.round);
+  }
+
+  document.addEventListener('visibilitychange', onVisibility);
 
   function confirmLeave() {
     const { backdrop, close } = openModal(`
@@ -296,6 +313,7 @@ export function renderPlay(root, params = {}) {
     stopTimer();
     stopMusic({ fade: 600 });
     root.removeEventListener('pointerdown', retryMusic);
+    document.removeEventListener('visibilitychange', onVisibility);
     client.destroy();
   };
 }
