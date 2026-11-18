@@ -6,6 +6,7 @@ import {
   isKnockout,
   rankPlayers,
   resolveWinner,
+  SCORE,
   ropeFromScores,
   tallyRound,
   clamp,
@@ -29,6 +30,7 @@ export class HostRoom {
     this.queue = stored?.queue || [];
     this.correctIndex = stored?.correctIndex ?? -1;
     this.votes = stored?.votes || {};
+    this.away = {};
     this.durationMs = stored?.durationMs || this.state.config.duration * 1000;
 
     this.channel = new Channel(code, 'host');
@@ -196,6 +198,7 @@ export class HostRoom {
     }
     for (const p of this.state.players) {
       p.score = 0;
+      p.warned = false;
       p.correct = 0;
       p.answered = 0;
       p.totalMs = 0;
@@ -205,6 +208,7 @@ export class HostRoom {
     }
 
     this.votes = {};
+    this.away = {};
     this.correctIndex = -1;
     this.saveHostData();
     this.publish();
@@ -225,6 +229,7 @@ export class HostRoom {
     this.state.question = toPublic(question);
     this.correctIndex = question.correct;
     this.votes = {};
+    this.away = {};
     this.state.voteCount = 0;
     this.state.roundPlayers = this.state.players
       .filter((p) => p.connected && p.joinedAt <= now + 1000)
@@ -248,9 +253,14 @@ export class HostRoom {
     const duration = this.durationMs || this.state.config.duration * 1000;
     const participants = this.state.players.filter((p) => this.state.roundPlayers.includes(p.id));
 
+    const tallyVotes = {};
+    for (const [id, v] of Object.entries(this.votes)) {
+      tallyVotes[id] = v.away ? { ...v, ms: duration } : v;
+    }
+    
     const result = applyBonuses(
       tallyRound({
-        votes: this.votes,
+        votes: tallyVotes,
         players: participants,
         correctIndex: this.correctIndex,
         durationMs: duration,
@@ -266,8 +276,24 @@ export class HostRoom {
         continue;
       }
       const correct = vote.choice === this.correctIndex;
-      const points = individualPoints({ correct, ms: vote.ms, durationMs: duration });
+      const flagged = Boolean(vote.away);
+      const points = individualPoints({
+        correct,
+        ms: flagged ? duration : vote.ms,
+        durationMs: duration,
+      });
       p.score += points;
+      let penalty = 0;
+      let warning = false;
+      if (flagged) {
+        if (p.warned) {
+          penalty = Math.min(SCORE.awayPenalty, p.score);
+          p.score -= penalty;
+        } else {
+          p.warned = true;
+          warning = true;
+        }
+      }
       p.answered += 1;
       p.totalMs += vote.ms;
       if (correct) {
@@ -277,7 +303,7 @@ export class HostRoom {
       } else {
         p.streak = 0;
       }
-      individuals[p.id] = { choice: vote.choice, correct, ms: vote.ms, points };
+        individuals[p.id] = { choice: vote.choice, correct, ms: vote.ms, points, penalty, away: flagged, warning };
     }
 
     const ropeBefore = this.state.rope;
@@ -348,6 +374,7 @@ export class HostRoom {
     this.state.endsAt = 0;
     this.state.voteCount = 0;
     this.votes = {};
+    this.away = {};
     this.queue = [];
     this.correctIndex = -1;
     for (const team of ['A', 'B']) {
@@ -357,6 +384,7 @@ export class HostRoom {
     }
     for (const p of this.state.players) {
       p.score = 0;
+      p.warned = false;
       p.correct = 0;
       p.answered = 0;
       p.totalMs = 0;

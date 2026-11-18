@@ -1,5 +1,6 @@
 import { esc, fmtMs } from '../../../core/utils.js';
 import { play } from '../../../core/audio.js';
+import { toast } from '../../toast.js';
 import { showFeedback } from './feedback.js';
 
 const LETTERS = ['A', 'B', 'C', 'D'];
@@ -23,6 +24,15 @@ export function buildReveal(ctx, state) {
   const correctOption = state.question?.options?.[correctIndex] || '';
 
   play(correct ? 'correct' : 'wrong');
+
+  if (detail?.away) {
+    if (detail.warning) {
+      toast('Saliste de la pantalla: sin bonus de velocidad. La próxima será -25 pts', 'bad', 4200);
+    } else {
+      const extra = detail.penalty ? ` y -${detail.penalty} pts` : '';
+      toast(`Saliste de la pantalla: sin bonus de velocidad${extra}`, 'bad', 3600);
+    }
+  }
 
   const title = !voted ? 'No votaste' : correct ? 'Acertaste' : 'Fallaste';
   const sub = !voted
