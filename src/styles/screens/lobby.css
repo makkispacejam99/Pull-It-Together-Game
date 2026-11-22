@@ -155,7 +155,7 @@
 
 .team-col__list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 190px), 1fr));
   flex: 1;
   min-height: 0;
   align-content: flex-start;
@@ -165,10 +165,11 @@
 }
 
 .player-chip {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 4px;
-  max-width: 100%;
+  width: 100%;
+  min-width: 0;
   padding: 3px 5px 3px 3px;
   border: 1px solid var(--line);
   border-radius: 999px;
@@ -186,7 +187,8 @@
 }
 
 .player-chip span {
-  min-width: 0;
+  flex: 1 1 auto;
+  min-width: 8ch;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
