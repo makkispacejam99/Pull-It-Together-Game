@@ -327,9 +327,15 @@ export function play(name, options = {}) {
   duckForEffect(item.duck, activeSeconds);
 }
 
+function unlockOnGesture() {
+  unlockAudio();
+  if (music && !muted && music.paused) music.play().catch(() => {});
+}
+
 if (typeof document !== 'undefined') {
-  document.addEventListener('pointerdown', unlockAudio, { once: true, passive: true });
-  document.addEventListener('keydown', unlockAudio, { once: true });
+  ['pointerdown', 'touchend', 'click', 'keydown'].forEach((type) => {
+    document.addEventListener(type, unlockOnGesture, { capture: true, passive: true });
+  });
 }
 
 export const SFX_LIST = Object.keys(SFX);
